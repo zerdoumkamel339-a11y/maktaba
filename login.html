@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - BookDZ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-family: inherit;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .switch-text {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .switch-text a {
+            color: var(--primary);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        #errorMessage {
+            color: var(--accent);
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-card">
+        <h1 style="text-align:center; color: var(--primary); margin-bottom: 10px;">BookDZ</h1>
+        <p style="text-align:center; color: var(--text-secondary); margin-bottom: 30px;">تسجيل الدخول للمنصة</p>
+
+        <div class="form-group">
+            <label>البريد الإلكتروني</label>
+            <input type="email" id="loginEmail" placeholder="example@mail.com">
+        </div>
+        <div class="form-group">
+            <label>كلمة المرور</label>
+            <input type="password" id="loginPass" placeholder="••••••••">
+            <div style="text-align: left; margin-top: 8px;">
+                <a href="javascript:void(0)" onclick="handleForgotPassword()"
+                    style="font-size: 0.8rem; color: var(--primary); font-weight: 600; text-decoration: none;">نسيت كلمة
+                    السر؟</a>
+            </div>
+        </div>
+
+        <button class="btn-submit" id="loginBtn" onclick="handleLogin()">دخول <i
+                class="fas fa-sign-in-alt"></i></button>
+        <div id="errorMessage"></div>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay"
+            style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:1000; justify-content:center; align-items:center;">
+            <div style="text-align:center;">
+                <i class="fas fa-spinner fa-spin" style="font-size:2rem; color:var(--primary);"></i>
+                <p style="margin-top:10px; font-weight:700;">جاري التحقق...</p>
+            </div>
+        </div>
+
+        <div class="switch-text">
+            ليس لديك حساب؟ <a href="register.html">سجل الآن مجاناً</a>
+        </div>
+    </div>
+
+    <script>
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPass').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const errorEl = document.getElementById('errorMessage');
+            const loader = document.getElementById('loadingOverlay');
+
+            if (!email || !password) { alert('يرجى إدخال البيانات!'); return; }
+
+            try {
+                loginBtn.disabled = true;
+                loginBtn.innerText = "جاري التحقق...";
+                loader.style.display = 'flex';
+                errorEl.style.display = 'none';
+
+                // 1. تسجيل الدخول عبر Supabase Auth
+                const { data, error: authError } = await window.sb.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (authError) {
+                    let msg = "البريد الإلكتروني أو كلمة المرور غير صحيحة";
+                    if (authError.message?.includes("confirm")) msg = "يرجى تفعيل حسابك عبر البريد الإلكتروني أولاً";
+                    throw new Error(msg);
+                }
+
+                // 2. جلب بيانات البروفايل (المصدر الوحيد للحقيقة هو قاعدة البيانات)
+                const { data: profile, error: profileError } = await window.sb
+                    .from('profiles')
+                    .select('role, store_id, full_name')
+                    .eq('id', data.user.id)
+                    .maybeSingle();
+
+                // التحقق من أخطاء الاتصال أو الـ RLS
+                if (profileError) {
+                    console.error("Database Error:", profileError);
+                    throw new Error("حدث خطأ أثناء قراءة بيانات الحساب");
+                }
+
+                // إذا نجح الدخول ولكن لم يجد بروفايل (يمنع المتسللين أو الحسابات المعطوبة)
+                if (!profile) {
+                    throw new Error("لم يتم العثور على بروفايل لهذا المستخدم. يرجى مراجعة الإدارة.");
+                }
+
+                // 3. تخزين البيانات في localStorage
+                localStorage.setItem('bookdz_role', profile.role);
+                localStorage.setItem('bookdz_store_id', profile.store_id || '');
+                localStorage.setItem('bookdz_name', profile.full_name || '');
+                localStorage.setItem('bookdz_uid', data.user.id);
+
+                // 4. التوجيه
+                alert(`مرحباً بك مجدداً يا ${profile.full_name} 👋`);
+                window.location.replace((profile.role === 'bookstore') ? "dashboard.html" : "home.html");
+
+            } catch (err) {
+                loader.style.display = 'none';
+                errorEl.innerText = err.message;
+                errorEl.style.display = 'block';
+                console.error(err);
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerText = "تسجيل الدخول";
+                loader.style.display = 'none';
+            }
+        }
+
+        async function handleForgotPassword() {
+            const email = document.getElementById('loginEmail').value.trim();
+            if (!email) {
+                alert("يرجى إدخال البريد الإلكتروني أولاً لإرسال رابط استعادة كلمة السر.");
+                return;
+            }
+
+            try {
+                const { error } = await window.sb.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin + '/update-password.html',
+                });
+
+                if (error) throw error;
+                alert("تم إرسال رابط إعادة تعيين كلمة السر إلى بريدك الإلكتروني.");
+            } catch (err) {
+                alert("خطأ: " + err.message);
+            }
+        }
+
+        // التحقق من الجلسة - إذا كان مسجلاً أعد توجيهه فوراً
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!window.sb) return;
+            const { data: { session } } = await window.sb.auth.getSession();
+            if (session) {
+                const role = localStorage.getItem('bookdz_role');
+                window.location.replace((role === 'bookstore') ? "dashboard.html" : "home.html");
+            }
+        });
+    </script>
+</body>
+
+</html>

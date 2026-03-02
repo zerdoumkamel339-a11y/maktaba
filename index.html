@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BookDZ - المنصة الشاملة SPA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="app-container">
+
+        <!-- App Header -->
+        <header class="app-header">
+            <div class="header-top">
+                <div class="user-greeting">
+                    <img src="https://ui-avatars.com/api/?name=Guest&background=random" class="avatar"
+                        id="header-avatar">
+                    <div class="greeting-text">
+                        <span class="hello" id="user-name">مرحباً</span>
+                        <span class="location" id="user-location-label"><i class="fas fa-map-marker-alt"></i>
+                            الجزائر</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <span id="role-badge" class="badge-role" style="display: none;"></span>
+                    <button class="notifications-btn auth-only" id="logout-btn"><i
+                            class="fas fa-sign-out-alt"></i></button>
+                    <button class="notifications-btn"><i class="far fa-bell"></i></button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main id="app">
+
+            <!-- View: Home -->
+            <section id="view-home" class="view-section">
+                <div class="top-tabs">
+                    <div class="top-tab active">السوق</div>
+                    <div class="top-tab">نبض القراءة</div>
+                </div>
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="ابحث عن كتاب، مؤلف...">
+                </div>
+                <div class="section-header">
+                    <h2 class="section-title">الأكثر مبيعاً</h2>
+                </div>
+                <div class="horizontal-scroll" id="market-list">
+                    <!-- Loaded dynamically via script.js -->
+                </div>
+            </section>
+
+            <!-- View: Login -->
+            <section id="view-login" class="view-section">
+                <div class="auth-card">
+                    <h2>تسجيل الدخول</h2>
+                    <form onsubmit="event.preventDefault(); handleLoginSubmit();">
+                        <div class="form-group">
+                            <label>البريد الإلكتروني</label>
+                            <input type="email" id="login-email" placeholder="example@mail.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>كلمة المرور</label>
+                            <input type="password" id="login-pass" placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="btn-primary">دخول آمن</button>
+                    </form>
+                    <p class="switch-link">ليس لديك حساب؟ <span onclick="Router.navigate('/register')">سجل الآن</span>
+                    </p>
+                </div>
+            </section>
+
+            <!-- View: Register -->
+            <section id="view-register" class="view-section">
+                <div class="auth-card">
+                    <h2>إنشاء حساب جديد</h2>
+                    <form onsubmit="event.preventDefault(); handleRegisterSubmit();">
+                        <div class="form-group">
+                            <label>الاسم الكامل</label>
+                            <input type="text" id="reg-name" placeholder="أحمد محمد" required>
+                        </div>
+                        <div class="form-group">
+                            <label>البريد الإلكتروني</label>
+                            <input type="email" id="reg-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>كلمة المرور</label>
+                            <input type="password" id="reg-pass" minlength="6" required>
+                        </div>
+                        <div class="form-group">
+                            <label>نوع الحساب</label>
+                            <select id="reg-role">
+                                <option value="user">مشتري / بائع فردي</option>
+                                <option value="bookstore">مكتبة تجارية</option>
+                                <option value="publisher">دار نشر</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-primary">تأكيد التسجيل</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- View: Dashboard -->
+            <section id="view-dashboard" class="view-section">
+                <div class="auth-card" style="text-align: right;">
+                    <h2 style="color: var(--secondary);">لوحة تحكم المكتبة</h2>
+                    <p style="color: var(--text-secondary);">أهلاً بك، يمكنك إدارة مخزونك هنا.</p>
+                </div>
+            </section>
+
+            <!-- View: Unauthorized -->
+            <section id="view-unauthorized" class="view-section">
+                <div class="auth-card">
+                    <i class="fas fa-lock" style="font-size: 3rem; color: var(--accent);"></i>
+                    <h2>غير مسموح</h2>
+                    <button onclick="Router.navigate('/')" class="btn-primary">العودة</button>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="Router.navigate('/')">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
+            </div>
+            <div class="nav-item guest-only" onclick="Router.navigate('/login')">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>دخول</span>
+            </div>
+            <div class="nav-item auth-only" onclick="window.history.back()">
+                <i class="fas fa-arrow-right"></i>
+                <span>رجوع</span>
+            </div>
+            <div class="nav-item auth-only" onclick="handleDashboardNav()">
+                <i class="fas fa-th-large"></i>
+                <span>لوحتي</span>
+            </div>
+        </nav>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+
+    <script>
+        async function handleLoginSubmit() {
+            try {
+                await AuthService.login(document.getElementById('login-email').value, document.getElementById('login-pass').value);
+            } catch (err) { alert(err.message); }
+        }
+        async function handleRegisterSubmit() {
+            const metadata = {
+                full_name: document.getElementById('reg-name').value,
+                role: document.getElementById('reg-role').value
+            };
+            try {
+                await AuthService.register(document.getElementById('reg-email').value, document.getElementById('reg-pass').value, metadata);
+                alert("تم التسجيل!");
+            } catch (err) { alert(err.message); }
+        }
+        function handleDashboardNav() {
+            const role = AuthService.profile?.role;
+            if (role === 'bookstore') Router.navigate('/dashboard');
+            else Router.navigate('/');
+        }
+    </script>
+</body>
+
+</html>
