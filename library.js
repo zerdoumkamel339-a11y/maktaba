@@ -173,11 +173,20 @@ function renderOrders() {
                     </div>
                 </div>
 
-                <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 12px; font-size: 0.9rem; border: 1px bordered var(--border);">
-                    <div style="margin-bottom: 4px;"><i class="fas fa-map-marker-alt" style="color:var(--accent); width:20px;"></i> <strong>العنوان:</strong> ${order.baladiya}، ${order.wilaya}</div>
-                    <div><i class="fas fa-phone-alt" style="color:var(--secondary); width:20px;"></i> <strong>الهاتف:</strong> <span dir="ltr">${order.phone}</span></div>
-                    <div style="margin-top: 8px; border-top: 1px solid #ddd; padding-top: 4px; font-size: 0.75rem; color: #666;">
-                        BookDZ SaaS Invoice - الدفع عند الاستلام (COD)
+                <div class="data-box" style="border-right-color: var(--secondary);">
+                    <div class="data-row">
+                        <div class="data-icon accent"><i class="fas fa-map-marker-alt"></i></div>
+                        <div class="data-content">
+                            <span class="data-label">العنوان الكامل</span>
+                            <span class="data-value">${order.baladiya}، ${order.wilaya}</span>
+                        </div>
+                    </div>
+                    <div class="data-row">
+                        <div class="data-icon"><i class="fas fa-phone-alt"></i></div>
+                        <div class="data-content">
+                            <span class="data-label">رقم التواصل</span>
+                            <span class="data-value monospace" dir="ltr">${order.phone}</span>
+                        </div>
                     </div>
                 </div>
             </div>

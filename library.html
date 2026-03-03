@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BookDZ - لوحة تحكم المكتبة</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Fira+Code:wght@400;500;600&display=swap"
+        rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="print_style.css">
@@ -191,30 +193,253 @@
             cursor: pointer;
         }
 
-        /* Logout */
-        .logout-btn {
+        /* Logout & Logic Controls */
+        .window-controls-header {
             position: absolute;
             top: 20px;
             left: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            width: 40px;
-            height: 40px;
+            display: flex;
+            gap: 8px;
+            direction: ltr;
+        }
+
+        .window-controls-header span {
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
-            color: white;
+            display: inline-block;
             cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .window-controls-header span:hover {
+            transform: scale(1.2);
+        }
+
+        .window-controls-header .close {
+            background: #f43f5e;
+        }
+
+        .window-controls-header .min {
+            background: #f59e0b;
+        }
+
+        .window-controls-header .max {
+            background: #10b981;
+        }
+
+        /* Floating Action Button (Publish) */
+        .fab-publish {
+            position: fixed;
+            bottom: calc(var(--bottom-nav-height) + 20px);
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.5);
+            cursor: pointer;
+            z-index: 90;
+            border: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: pulse-fab 2s infinite;
+        }
+
+        .fab-publish:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 15px 35px rgba(139, 92, 246, 0.7);
+        }
+
+        @keyframes pulse-fab {
+            0% {
+                box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(139, 92, 246, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+            }
+        }
+
+        /* Hacker Modal Styles */
+        .window-controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 8px;
+            direction: ltr;
+        }
+
+        .window-controls span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .window-controls span:hover {
+            transform: scale(1.2);
+        }
+
+        .window-controls .close {
+            background: #f43f5e;
+            cursor: pointer;
+        }
+
+        .window-controls .min {
+            background: #f59e0b;
+        }
+
+        .window-controls .max {
+            background: #10b981;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            direction: ltr;
+            text-align: left;
+            transition: color 0.3s ease;
+        }
+
+        .form-group:focus-within label {
+            color: var(--primary);
+        }
+
+        .form-group label span.keyword {
+            color: #f472b6;
+        }
+
+        .form-group label span.variable {
+            color: #60a5fa;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+            box-sizing: border-box;
+            direction: rtl;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .btn-submit-hacker {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 10px 20px -10px rgba(139, 92, 246, 0.5);
+            letter-spacing: 1px;
+        }
+
+        .btn-submit-hacker:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px -10px rgba(139, 92, 246, 0.6);
+            filter: brightness(1.1);
+        }
+
+        /* Image Upload Styles */
+        .image-upload-wrapper {
+            position: relative;
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.2);
+            margin-bottom: 24px;
+        }
+
+        .image-upload-wrapper:hover {
+            border-color: var(--primary);
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .image-upload-wrapper i {
+            font-size: 2rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .image-upload-wrapper p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-family: 'Fira Code', monospace;
+        }
+
+        .image-preview {
+            width: 100%;
+            max-height: 180px;
+            object-fit: contain;
+            border-radius: 8px;
+            display: none;
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
         }
     </style>
 </head>
 
 <body>
+    <!-- Background Effects -->
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+
     <div class="app-container">
 
         <!-- Header -->
         <header class="dashboard-header">
-            <button class="logout-btn" onclick="window.location.href='index.html'" title="تسجيل الخروج">
-                <i class="fas fa-sign-out-alt"></i>
-            </button>
+            <div class="window-controls-header">
+                <span class="close" title="تسجيل الخروج" onclick="window.location.href='index.html'"></span>
+                <span class="min" title="الرئيسية" onclick="window.location.href='index.html'"></span>
+                <span class="max" title="تحديث بالبيانات" onclick="window.location.reload()"></span>
+            </div>
             <div class="library-profile">
                 <div class="stat-icon" id="roleIconSet"
                     style="background: white; color: var(--secondary); font-size: 2rem; width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
@@ -234,58 +459,239 @@
             </div>
         </header>
 
-        <!-- Main Content -->
-        <main style="flex: 1; overflow-y: auto;">
-            <!-- Stats -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon orders"><i class="fas fa-box"></i></div>
-                    <div class="stat-details">
-                        <h3 id="pendingCount">3</h3>
-                        <p>طلبات جديدة</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon revenue"><i class="fas fa-wallet"></i></div>
-                    <div class="stat-details">
-                        <h3>8,500 <span style="font-size:0.8rem">دج</span></h3>
-                        <p>أرباح اليوم</p>
-                    </div>
-                </div>
-            </div>
+        <!-- Main Content Wrapper -->
+        <main style="flex: 1; overflow-y: auto; position: relative;">
 
-            <!-- Orders List -->
-            <section class="orders-section">
-                <h2 style="margin-bottom: 16px; font-size: 1.2rem; color: var(--text-primary);">الطلبات الواردة</h2>
-                <div id="vendorOrdersList">
-                    <!-- Injected by JS -->
+            <!-- SECTION: HOME (Orders) -->
+            <section id="section-home" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon orders"><i class="fas fa-box"></i></div>
+                        <div class="stat-details">
+                            <h3 id="pendingCount">3</h3>
+                            <p>طلبات جديدة</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon revenue"><i class="fas fa-wallet"></i></div>
+                        <div class="stat-details">
+                            <h3>8,500 <span style="font-size:0.8rem">دج</span></h3>
+                            <p>أرباح اليوم</p>
+                        </div>
+                    </div>
+                </div>
+
+                <section class="orders-section">
+                    <h2 style="margin-bottom: 16px; font-size: 1.2rem; color: var(--text-primary);">الطلبات الواردة</h2>
+                    <div id="vendorOrdersList">
+                        <!-- Injected by JS -->
+                    </div>
+                </section>
+            </section>
+
+            <!-- SECTION: INVENTORY -->
+            <section id="section-inventory" class="tab-content" style="display: none; padding: 20px;">
+                <h2 style="margin-bottom: 16px; font-size: 1.2rem; color: var(--text-primary);">> LIST_ALL FROM
+                    inventory</h2>
+                <div class="data-box" style="border-right-color: var(--primary);">
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <i class="fas fa-layer-group"
+                            style="font-size: 3rem; color: var(--primary); opacity: 0.5; margin-bottom: 16px;"></i>
+                        <p style="font-family: 'Fira Code', monospace; color: var(--text-secondary);">/* سيظهر هنا سجل
+                            كافة الكتب التي قمت بنشرها مع إمكانية التعديل والحذف قريباً */</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: REPORTS -->
+            <section id="section-reports" class="tab-content" style="display: none; padding: 20px;">
+                <h2 style="margin-bottom: 16px; font-size: 1.2rem; color: var(--text-primary);">> GENERATE_ANALYTICS()
+                </h2>
+                <div class="data-box" style="border-right-color: #fbbf24;">
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <i class="fas fa-chart-pie"
+                            style="font-size: 3rem; color: #fbbf24; opacity: 0.5; margin-bottom: 16px;"></i>
+                        <p style="font-family: 'Fira Code', monospace; color: var(--text-secondary);">/* ترقب إحصائيات
+                            متقدمة لمبيعاتك ونمو مكتبتك في التحديث القادم */</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: SETTINGS -->
+            <section id="section-settings" class="tab-content" style="display: none; padding: 20px;">
+                <h2 style="margin-bottom: 16px; font-size: 1.2rem; color: var(--text-primary);">> SYSTEM_CONFIG --user
+                </h2>
+                <div class="data-box" style="border-right-color: #10b981;">
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <i class="fas fa-user-gear"
+                            style="font-size: 3rem; color: #10b981; opacity: 0.5; margin-bottom: 16px;"></i>
+                        <p style="font-family: 'Fira Code', monospace; color: var(--text-secondary);">/* إعدادات الملف
+                            الشخصي، الأمان، ومعلومات التوصيل قيد التطوير */</p>
+                    </div>
                 </div>
             </section>
         </main>
 
         <!-- Bottom Navigation for Library -->
         <nav class="bottom-nav">
-            <a href="#" class="nav-item active">
+            <a href="javascript:void(0)" class="nav-item active" onclick="switchTab('home', this)">
                 <i class="fas fa-home"></i>
                 <span>الرئيسية</span>
             </a>
-            <a href="#" class="nav-item">
+            <a href="javascript:void(0)" class="nav-item" onclick="switchTab('inventory', this)">
                 <i class="fas fa-book"></i>
                 <span>المخزون</span>
             </a>
-            <a href="#" class="nav-item">
+            <a href="javascript:void(0)" class="nav-item" onclick="switchTab('reports', this)">
                 <i class="fas fa-chart-line"></i>
                 <span>التقارير</span>
             </a>
-            <a href="#" class="nav-item">
+            <a href="javascript:void(0)" class="nav-item" onclick="switchTab('settings', this)">
                 <i class="fas fa-cog"></i>
                 <span>الإعدادات</span>
             </a>
         </nav>
 
+        <!-- Floating Action Button -->
+        <button class="fab-publish" onclick="openPublishModal()" title="إضافة كتاب / منشور جديد">
+            <i class="fas fa-plus"></i>
+        </button>
+
+        <!-- Publish Modal -->
+        <div class="modal-overlay" id="publishModal">
+            <div class="modal-content publish-content"
+                style="border: 1px solid #10b981; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.9); margin-bottom: 20px;">
+                <div class="window-controls">
+                    <span class="close" onclick="closePublishModal()" title="إغلاق النافذة"></span>
+                    <span class="min" onclick="window.location.href='index.html'" title="الرئيسية"></span>
+                    <span class="max" onclick="window.location.reload()" title="تحديث"></span>
+                </div>
+
+                <div style="text-align: center; margin-bottom: 24px; margin-top: 10px;">
+                    <h3
+                        style="font-weight: 800; font-size: 1.2rem; color: #10b981; font-family: 'Fira Code', monospace;">
+                        > INSERT_INTO inventory</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem;">أدخل تفاصيل الكتاب الجديد لإدراجه في
+                        الـ Database</p>
+                </div>
+
+                <form id="addBookForm" onsubmit="handlePublish(event)">
+                    <div class="form-group">
+                        <label><span class="keyword">const</span> <span class="variable">bookCover</span> = </label>
+                        <div class="image-upload-wrapper" onclick="document.getElementById('bImage').click()">
+                            <img id="imagePreview" class="image-preview" src="#" alt="Preview">
+                            <div id="uploadPlaceholder">
+                                <i class="fas fa-camera"></i>
+                                <p>> CAPTURE_OR_UPLOAD_IMAGE()</p>
+                            </div>
+                            <input type="file" id="bImage" accept="image/*" capture="environment" style="display: none;"
+                                onchange="previewImage(this)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><span class="keyword">let</span> <span class="variable">bookTitle</span> = </label>
+                        <input type="text" id="bTitle" placeholder="'اسم الكتاب...'" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label><span class="keyword">let</span> <span class="variable">bookDesc</span> = </label>
+                        <textarea id="bDesc" placeholder="'وصف مختصر لمحتوى الكتاب وحالته...'" required></textarea>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label><span class="keyword">let</span> <span class="variable">bookPrice</span> = </label>
+                            <input type="number" id="bPrice" placeholder="1500" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label><span class="keyword">let</span> <span class="variable">stockQty</span> = </label>
+                            <input type="number" id="bQty" placeholder="10" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit-hacker">> COMMIT_TRANSACTION()</button>
+                </form>
+            </div>
+        </div>
+
     </div>
 
     <script src="library.js"></script>
+    <script>
+        const publishModal = document.getElementById('publishModal');
+
+        function switchTab(tabId, el) {
+            // Update Nav Items
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            el.classList.add('active');
+
+            // Hide/Show Content Sections
+            document.querySelectorAll('.tab-content').forEach(section => section.style.display = 'none');
+
+            const targetSection = document.getElementById(`section-${tabId}`);
+            if (targetSection) {
+                targetSection.style.display = 'block';
+                // Add minor fade-in effect
+                targetSection.style.animation = 'fadeInUp 0.3s ease-out';
+            }
+
+            // If we are not in home, maybe hide the FAB (optional)
+            const fab = document.querySelector('.fab-publish');
+            if (tabId === 'inventory' || tabId === 'home') {
+                fab.style.display = 'flex';
+            } else {
+                fab.style.display = 'none';
+            }
+        }
+
+        function previewImage(input) {
+            const preview = document.getElementById('imagePreview');
+            const placeholder = document.getElementById('uploadPlaceholder');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    placeholder.style.display = 'none';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function openPublishModal() {
+            publishModal.classList.add('active');
+        }
+
+        function closePublishModal() {
+            publishModal.classList.remove('active');
+        }
+
+        function handlePublish(e) {
+            e.preventDefault();
+
+            // Temporary Fake Interaction
+            const submitBtn = document.querySelector('.btn-submit-hacker');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> EXECUTING...';
+            submitBtn.style.background = '#10b981';
+
+            setTimeout(() => {
+                alert("> SUCCESS: 1 ROW INSERTED.\nتم إضافة الكتاب إلى المخزون بنجاح!");
+                submitBtn.innerHTML = originalText;
+                submitBtn.style.background = '';
+                closePublishModal();
+                document.getElementById('addBookForm').reset();
+                document.getElementById('imagePreview').style.display = 'none';
+                document.getElementById('uploadPlaceholder').style.display = 'block';
+            }, 800);
+        }
+
+        publishModal.addEventListener('click', function (e) {
+            if (e.target === publishModal) closePublishModal();
+        });
+    </script>
 </body>
 
 </html>

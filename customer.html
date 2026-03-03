@@ -6,23 +6,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BookDZ - منصة المكتبات المحلية</title>
     <meta name="description" content="البحث عن الكتب في المكتبات المحلية بسهولة وطلبها للبيت أو حجزها في المكتبة">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Fira+Code:wght@400;500;600&display=swap"
+        rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="checkout_style.css">
+    <style>
+        .window-controls {
+            display: flex;
+            gap: 8px;
+            direction: ltr;
+            margin-bottom: 20px;
+        }
+
+        .window-controls span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .window-controls span:hover {
+            transform: scale(1.2);
+        }
+
+        .window-controls .close {
+            background: #f43f5e;
+        }
+
+        .window-controls .min {
+            background: #f59e0b;
+        }
+
+        .window-controls .max {
+            background: #10b981;
+        }
+
+        .app-header {
+            position: relative;
+        }
+    </style>
 </head>
 
 <body>
+    <!-- Background Effects -->
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+
     <!-- App Container -->
     <div class="app-container">
         <!-- Header -->
         <header class="app-header">
+            <div class="window-controls">
+                <span class="close" title="رجوع" onclick="window.history.back()"></span>
+                <span class="min" title="الرئيسية" onclick="window.location.href='index.html'"></span>
+                <span class="max" title="تحديث" onclick="window.location.reload()"></span>
+            </div>
             <div class="header-top">
                 <div class="user-greeting">
                     <img src="https://i.pravatar.cc/100?img=11" alt="User Avatar" class="avatar">
                     <div class="greeting-text">
                         <span class="hello">مرحباً، محمد 👋</span>
-                        <span class="location"><i class="fas fa-map-marker-alt"></i> الجزائر العاصمة</span>
+                        <div class="location-badge"
+                            style="display: flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.05); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; border: 1px solid var(--border); margin-top: 4px;">
+                            <i class="fas fa-map-marker-alt" style="color: var(--accent);"></i>
+                            <span style="color: var(--text-secondary);">الجزائر العاصمة</span>
+                        </div>
                     </div>
                 </div>
                 <button class="notifications-btn" aria-label="الإشعارات">
@@ -86,9 +138,15 @@
         <div class="modal-overlay" id="checkoutModal">
             <div class="modal-content checkout-content">
                 <button class="close-modal" id="closeCheckoutBtn"><i class="fas fa-times"></i></button>
-                <div class="checkout-header">
-                    <h3>أكمل الطلب</h3>
-                    <p>الرجاء التأكد من معلومات التوصيل</p>
+                <div class="window-controls" style="position: absolute; top: 15px; left: 15px; margin-bottom: 0;">
+                    <span class="close" onclick="closeCheckoutModal()" title="إلغلاق"></span>
+                    <span class="min"></span>
+                    <span class="max"></span>
+                </div>
+                <div class="checkout-header" style="text-align: center; margin-top: 15px;">
+                    <h3 style="font-family: 'Fira Code', monospace; color: var(--secondary);">> REQUEST_DELIVERY</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem;">الرجاء تأكيد إحداثيات موقعك لإرسال
+                        الشحنة</p>
                 </div>
                 <form id="checkoutForm" class="checkout-form">
                     <div class="form-group">
@@ -96,16 +154,20 @@
                         <input type="text" id="nameInput" placeholder="مثال: محمد علي" required>
                     </div>
                     <div class="form-group">
-                        <label for="wilayaSelect">الولاية</label>
-                        <select id="wilayaSelect" required>
-                            <option value="">اختر الولاية...</option>
+                        <label for="wilayaSelect"
+                            style="font-family: 'Fira Code', monospace; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 5px; display: block;">const
+                            WILAYA_NODE = </label>
+                        <select id="wilayaSelect" required style="font-family: 'Fira Code', monospace; color: #3b82f6;">
+                            <option value="" disabled selected>> --FETCHING_NODES--</option>
                             <!-- Injected by JS -->
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="baladiyaSelect">البلدية</label>
-                        <select id="baladiyaSelect" required disabled>
-                            <option value="">اختر البلدية...</option>
+                        <label for="baladiyaSelect"
+                            style="font-family: 'Fira Code', monospace; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 5px; display: block;">const
+                            COMMUNE_BRANCH = </label>
+                        <select id="baladiyaSelect" required disabled style="font-family: 'Fira Code', monospace;">
+                            <option value="">> --WAITING_FOR_NODE--</option>
                         </select>
                     </div>
                     <div class="form-group">

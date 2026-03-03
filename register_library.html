@@ -5,221 +5,738 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BookDZ - تسجيل مكتبة جديدة</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Fira+Code:wght@400;500;600&display=swap"
+        rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="index.css">
     <style>
+        :root {
+            --dev-bg: #09090b;
+            --dev-card: rgba(15, 15, 20, 0.7);
+            --dev-border: rgba(255, 255, 255, 0.08);
+            --dev-primary: #8b5cf6;
+            /* purple */
+            --dev-secondary: #3b82f6;
+            /* blue */
+            --dev-text: #e2e8f0;
+            --dev-text-muted: #94a3b8;
+        }
+
+        body {
+            background-color: var(--dev-bg);
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: var(--dev-text);
+            font-family: 'Cairo', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Glowing Orbs */
+        .glow-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            z-index: -1;
+            pointer-events: none;
+            animation: pulse-glow 6s infinite alternate;
+        }
+
+        .glow-orb-1 {
+            top: -10%;
+            right: -5%;
+            width: 400px;
+            height: 400px;
+            background: var(--dev-primary);
+        }
+
+        .glow-orb-2 {
+            bottom: -10%;
+            left: -5%;
+            width: 300px;
+            height: 300px;
+            background: var(--dev-secondary);
+        }
+
+        @keyframes pulse-glow {
+            0% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+
+            100% {
+                transform: scale(1.1);
+                opacity: 0.5;
+            }
+        }
+
         .register-container {
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             padding: 40px 20px;
             min-height: 100vh;
+            position: relative;
+            z-index: 1;
         }
 
         .header-section {
             text-align: center;
             margin-bottom: 30px;
+            animation: fadeInDown 0.8s ease-out;
         }
 
-        .header-section i {
-            font-size: 3rem;
-            color: var(--secondary);
-            margin-bottom: 12px;
+        .header-section .terminal-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-right: 3px solid #10b981;
+            border-bottom: 3px solid #065f46;
+            padding: 8px 20px;
+            border-radius: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: #10b981;
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+            transform: rotateX(15deg) rotateY(-10deg);
+            box-shadow: -5px 5px 15px rgba(0, 0, 0, 0.5);
+            animation: floatBadge 5s ease-in-out infinite;
+        }
+
+        @keyframes floatBadge {
+
+            0%,
+            100% {
+                transform: rotateX(15deg) rotateY(-10deg) translateY(0);
+            }
+
+            50% {
+                transform: rotateX(12deg) rotateY(-5deg) translateY(-8px);
+            }
+        }
+
+        .header-section .terminal-badge .dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #10b981;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
         }
 
         .header-section h1 {
-            font-size: 2rem;
-            color: var(--text-primary);
+            font-size: 2.4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #c4b5fd 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0 0 5px 0;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .header-section p {
+            color: #d1d5db;
+            font-size: 1.1rem;
+            margin: 0;
+            font-weight: 500;
+            opacity: 0.9;
         }
 
         .register-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
+            background: var(--dev-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--dev-border);
+            border-radius: 24px;
             width: 100%;
             max-width: 480px;
-            padding: 30px;
-            box-shadow: var(--shadow-md);
+            padding: 40px 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        /* Mac OS Window Controls */
+        .window-controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 8px;
+            direction: ltr;
+        }
+
+        .window-controls span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .window-controls span:hover {
+            transform: scale(1.2);
+        }
+
+        .window-controls .close {
+            background: #ef4444;
+        }
+
+        .window-controls .min {
+            background: #f59e0b;
+        }
+
+        .window-controls .max {
+            background: #10b981;
         }
 
         .form-group {
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+            perspective: 1000px;
+            margin-bottom: 30px;
         }
 
         .form-group label {
-            font-weight: 700;
-            color: var(--text-primary);
+            display: block;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: var(--dev-text-muted);
+            margin-bottom: 10px;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .node-3d-card {
+            background: linear-gradient(145deg, #111827, #030712);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-right: 4px solid var(--dev-primary);
+            border-bottom: 4px solid rgba(0, 0, 0, 0.8);
+            border-radius: 12px;
+            padding: 16px;
+            transform: rotateX(8deg) rotateY(-5deg);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow:
+                -15px 15px 30px rgba(0, 0, 0, 0.6),
+                inset 1px 1px 2px rgba(255, 255, 255, 0.1);
+            position: relative;
+            animation: floatNode 6s ease-in-out infinite;
+        }
+
+        @keyframes floatNode {
+
+            0%,
+            100% {
+                transform: rotateX(8deg) rotateY(-5deg) translateY(0);
+            }
+
+            50% {
+                transform: rotateX(10deg) rotateY(-8deg) translateY(-15px);
+            }
+        }
+
+        .node-3d-card:hover,
+        .node-3d-card:focus-within {
+            transform: rotateX(0deg) rotateY(0deg) scale(1.05) translateZ(30px) !important;
+            border-color: var(--dev-primary);
+            box-shadow:
+                -5px 25px 50px rgba(0, 0, 0, 0.8),
+                0 0 40px rgba(139, 92, 246, 0.3);
+            animation-play-state: paused;
+            z-index: 100;
+        }
+
+        /* Staggered Floating Delays */
+        .form-group:nth-child(1) .node-3d-card {
+            animation-delay: 0s;
+        }
+
+        .form-group:nth-child(2) .node-3d-card {
+            animation-delay: 1.5s;
+        }
+
+        .form-group:nth-child(3) .node-3d-card {
+            animation-delay: 3s;
+        }
+
+        .form-group:nth-child(4) .node-3d-card {
+            animation-delay: 4.5s;
+        }
+
+        /* 3D Text Effect Classes */
+        .text-3d {
+            text-shadow:
+                0 1px 0 #000,
+                0 2px 0 #000,
+                0 3px 0 rgba(0, 0, 0, 0.4),
+                -1px 1px 3px rgba(139, 92, 246, 0.5);
+            letter-spacing: 0.5px;
+            display: inline-block;
+            animation: floatText 4s ease-in-out infinite;
+        }
+
+        @keyframes floatText {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .keyword,
+        .variable,
+        .form-group input,
+        .form-group select,
+        .btn-submit {
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 1);
+            display: inline-block;
+            animation: floatText 4s ease-in-out infinite;
+        }
+
+        /* Stagger text float so it doesn't move exactly with the card */
+        .form-group label.text-3d {
+            animation-delay: 0.5s;
+        }
+
+        .node-3d-card .text-3d {
+            animation-delay: 0.2s;
         }
 
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 12px;
-            border: 2px solid var(--border);
-            border-radius: var(--radius-sm);
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--dev-border);
+            color: var(--dev-text);
+            padding: 12px 14px;
+            border-radius: 8px;
             font-family: inherit;
-            font-size: 1rem;
-            transition: border-color 0.2s;
+            font-size: 0.95rem;
             outline: none;
+            transition: all 0.3s;
+            direction: rtl;
         }
 
         .form-group input:focus,
         .form-group select:focus {
-            border-color: var(--secondary);
+            background: rgba(0, 0, 0, 0.8);
+            border-color: var(--dev-primary);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--dev-primary);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        /* 3D Node Styling */
+        .node-3d-container {
+            perspective: 1000px;
+            margin: 20px 0;
+        }
+
+        .node-3d-card {
+            background: linear-gradient(145deg, #111827, #030712);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-right: 5px solid #10b981;
+            border-bottom: 5px solid #065f46;
+            border-radius: 12px;
+            padding: 20px;
+            transform: rotateX(10deg) rotateY(-5deg);
+            box-shadow:
+                -10px 10px 20px rgba(0, 0, 0, 0.5),
+                0 0 30px rgba(16, 185, 129, 0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .node-3d-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 45%, rgba(16, 185, 129, 0.05) 50%, transparent 55%);
+            background-size: 200% 200%;
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                background-position: -100% -100%;
+            }
+
+            100% {
+                background-position: 200% 200%;
+            }
+        }
+
+        .node-3d-card:hover {
+            transform: rotateX(0deg) rotateY(0deg) translateZ(10px);
+            box-shadow:
+                -5px 5px 40px rgba(16, 185, 129, 0.2),
+                0 0 50px rgba(0, 0, 0, 0.8);
+            border-color: #10b981;
+        }
+
+        .node-status {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.65rem;
+            color: #10b981;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .status-blink {
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 5px #10b981;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .form-group input::placeholder {
+            color: #475569;
+        }
+
+        #roleDesc {
+            font-size: 0.8rem;
+            color: #10b981;
+            margin-top: 8px;
+            font-family: 'Fira Code', monospace;
+            padding: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 8px;
+            border-right: 2px solid #10b981;
+            direction: rtl;
         }
 
         .btn-submit {
             width: 100%;
             padding: 16px;
-            background: var(--gradient-secondary);
+            background: linear-gradient(135deg, var(--dev-primary), var(--dev-secondary));
             color: white;
             border: none;
-            border-radius: var(--radius-pill);
-            font-size: 1.1rem;
-            font-weight: 800;
+            border-radius: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s;
-            margin-top: 10px;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 10px 20px -10px rgba(139, 92, 246, 0.5);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 1px;
+        }
+
+        .btn-submit::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: skewX(-20deg);
+            animation: shine 4s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                left: -100%;
+            }
+
+            20% {
+                left: 200%;
+            }
+
+            100% {
+                left: 200%;
+            }
         }
 
         .btn-submit:hover {
             transform: translateY(-2px);
+            box-shadow: 0 15px 25px -10px rgba(139, 92, 246, 0.6);
+            filter: brightness(1.1);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
         }
 
         .btn-back {
             display: inline-block;
-            margin-top: 20px;
-            color: var(--text-secondary);
+            margin-top: 24px;
+            color: var(--dev-text-muted);
             text-decoration: none;
             font-weight: 600;
+            font-size: 0.9rem;
             transition: color 0.2s;
+            font-family: 'Fira Code', monospace;
         }
 
         .btn-back:hover {
-            color: var(--primary);
+            color: var(--dev-secondary);
         }
 
-        /* Success Card */
+        .btn-back i {
+            margin-left: 8px;
+            font-size: 0.8rem;
+        }
+
+        /* Success Card (Terminal Theme) */
         .success-card {
             display: none;
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
+            background: #000;
+            border-radius: 16px;
             width: 100%;
             max-width: 480px;
             padding: 40px 30px;
             text-align: center;
-            box-shadow: var(--shadow-lg);
-            border: 2px solid var(--secondary);
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
+            border: 1px solid #10b981;
+            position: relative;
+        }
+
+        .success-card::before {
+            content: 'Terminal - bash - 80x24';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #1e293b;
+            color: #94a3b8;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            padding: 6px 0;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            border-bottom: 1px solid #334155;
         }
 
         .success-card i {
-            font-size: 4rem;
-            color: var(--secondary);
-            margin-bottom: 20px;
+            font-size: 3.5rem;
+            color: #10b981;
+            margin: 20px 0;
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
         }
 
         .success-card h2 {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             margin-bottom: 12px;
+            color: #fff;
         }
 
         .generated-id {
-            background: #f8fafc;
-            border: 2px dashed var(--secondary);
-            padding: 16px;
-            font-size: 2rem;
-            font-family: monospace;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px dashed #10b981;
+            padding: 20px;
+            font-size: 2.2rem;
+            font-family: 'Fira Code', monospace;
             font-weight: 800;
-            color: var(--primary-dark);
-            letter-spacing: 4px;
-            margin: 20px 0;
-            border-radius: var(--radius-md);
+            color: #10b981;
+            letter-spacing: 6px;
+            margin: 24px 0;
+            border-radius: 12px;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
             user-select: all;
         }
 
         .warning-text {
-            color: var(--accent);
-            font-size: 0.9rem;
-            font-weight: 700;
+            color: #fbbf24;
+            font-size: 0.85rem;
             margin-bottom: 24px;
-            padding: 12px;
-            background: rgba(244, 63, 94, 0.1);
-            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 3px solid #fbbf24;
+            border-radius: 6px;
+            text-align: right;
+            direction: rtl;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="app-container register-container">
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
 
-        <div class="header-section" id="headerSection">
-            <i class="fas fa-store-alt"></i>
-            <h1>انضم كشريك (مكتبة)</h1>
-            <p style="color:var(--text-secondary)">سجل مكتبتك وابدأ ببيع كتبك وعرضها للزبائن</p>
-        </div>
+    <div class="register-container">
+
+
 
         <form class="register-card" id="registerForm">
-            <div class="form-group">
-                <label>نوع الحساب (SaaS Tier)</label>
-                <select id="partnerRole" required onchange="updateRoleDescription()">
-                    <option value="library">مكتبة (Enterprise - 5000 كتاب)</option>
-                    <option value="publisher">دار نشر (Pro - خطة 7 أيام)</option>
-                    <option value="seller">بائع فردي (Basic - 3 كتب)</option>
-                </select>
-                <p id="roleDesc" style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px;">
-                    المكتبة يمكنها إدارة الطلبات، طباعة الفواتير، وعرض حتى 5000 كتاب.
-                </p>
+            <div class="window-controls">
+                <span class="close" title="رجوع" onclick="window.history.back()"></span>
+                <span class="min" title="الرئيسية" onclick="window.location.href='index.html'"></span>
+                <span class="max" title="تحديث" onclick="window.location.reload()"></span>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 40px; margin-top: 10px;">
+                <div class="node-3d-card"
+                    style="display: inline-block; padding: 25px 40px; transform: rotateX(12deg) rotateY(-8deg); background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(0,0,0,0.4)); border-color: rgba(139, 92, 246, 0.3);">
+                    <h1 class="text-3d" style="font-size: 1.8rem; margin-bottom: 10px; color: #fff;">انضم كشريك لمنصة
+                        إقرأ</h1>
+                    <p class="text-3d" style="font-size: 0.95rem; color: #d1d5db; opacity: 0.9; margin: 0;">سجل مكتبتك
+                        وابدأ أعمالك في بيئة تقنية متطورة</p>
+                </div>
             </div>
 
             <div class="form-group">
-                <label>اسم الكيان (مكتبة/دار نشر/اسم البائع)</label>
-                <input type="text" id="libName" placeholder="مثال: مكتبة النور" required>
+                <label class="text-3d"><span class="keyword">const</span> <span class="variable">accountTier</span> =
+                </label>
+                <div class="node-3d-card">
+                    <select id="partnerRole" class="text-3d" required onchange="updateRoleDescription()"
+                        style="color: var(--dev-primary); font-weight: bold;">
+                        <option value="library">"مكتبة (Enterprise)"</option>
+                        <option value="publisher">"دار نشر (Pro)"</option>
+                        <option value="seller">"بائع فردي (Basic)"</option>
+                    </select>
+                </div>
+                <div id="roleDesc" class="text-3d" style="margin-top:10px; font-size: 0.75rem; opacity: 0.8;">/* المكتبة
+                    يمكنها إدارة الطلبات، ومزامنة حتى 5000 كتاب */
+                </div>
             </div>
 
             <div class="form-group">
-                <label>الولاية</label>
-                <select id="libWilaya" required>
-                    <option value="">اختر الولاية المتواجدة بها</option>
-                </select>
+                <label class="text-3d"><span class="keyword">let</span> <span class="variable">entityName</span> =
+                </label>
+                <div class="node-3d-card">
+                    <input type="text" id="libName" class="text-3d" placeholder="'اسم الكيان هنا...'" required>
+                </div>
             </div>
 
             <div class="form-group">
-                <label>رقم هاتف مسؤول الحساب</label>
-                <input type="tel" id="libPhone" placeholder="0550000000" pattern="0[567][0-9]{8}" required>
+                <label class="text-3d"><span class="keyword">const</span> <span class="variable">regionalNode</span> =
+                </label>
+                <div class="node-3d-card">
+                    <div class="node-status" style="top: 8px; right: 12px; font-size: 0.55rem;">
+                        <span class="status-blink"></span> LIVE
+                    </div>
+                    <select id="libWilaya" class="text-3d" required style="color: #10b981; font-weight: bold;">
+                        <option value="" disabled selected>> --MOUNTING_ID--</option>
+                    </select>
+                </div>
             </div>
 
-            <button type="submit" class="btn-submit">تأكيد التسجيل وتوليد المُعرِّف</button>
+            <div class="form-group">
+                <label class="text-3d"><span class="keyword">let</span> <span class="variable">contactPhone</span> =
+                </label>
+                <div class="node-3d-card">
+                    <input type="tel" id="libPhone" class="text-3d" placeholder="'0550000000'" pattern="0[567][0-9]{8}"
+                        required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit text-3d">> EXECUTE_REGISTRATION()</button>
+
             <div style="text-align: center;">
-                <a href="index.html" class="btn-back"><i class="fas fa-arrow-right"></i> العودة للصفحة الرئيسية</a>
+                <a href="index.html" class="btn-back"><i class="fas fa-chevron-left"></i> return to_main();</a>
             </div>
         </form>
 
         <!-- نجاح التسجيل -->
         <div class="success-card" id="successCard">
             <i class="fas fa-check-circle"></i>
-            <h2>تم تسجيل مكتبتك بنجاح!</h2>
-            <p style="color:var(--text-secondary)">هذا هو المعرف السري الخاص بك لفتح واجهة لوحة تحكم المكتبة وتلقي
-                الطلبات.</p>
+            <h2>تأكيد توليد الحساب</h2>
+            <p style="color:var(--dev-text-muted); font-size: 0.9rem;">تم فتح المصادقة بنجاح. هذا المعرف السري <br>هو
+                مفتاح الدخول إلى لوحة التحكم (Dashboard).</p>
 
             <div class="generated-id" id="displayId">--------</div>
 
             <div class="warning-text">
-                <i class="fas fa-exclamation-triangle"></i> يرجى نسخ أو حفظ هذا الكود جيداً، لا تشاركه مع أي شخص، فهو
-                بمثابة مفتاح متجرك!
+                <i class="fas fa-exclamation-triangle"></i> ALERT: يرجى نسخ أو حفظ هذا المفتاح محلياً. لا تشاركه عبر
+                الشبكة فبه تدار صلاحيات متجرك بالكامل!
             </div>
 
-            <button class="btn-submit" onclick="copyIdAndLogin()" style="background: var(--gradient-primary)">
-                نسخ المعرف والذهاب لتسجيل الدخول <i class="fas fa-sign-in-alt"></i>
+            <button class="btn-submit" onclick="copyIdAndLogin()"
+                style="background: #10b981; box-shadow: 0 10px 20px -10px rgba(16, 185, 129, 0.5);">
+                > COPY_KEY_AND_LOGIN();
             </button>
         </div>
 
     </div>
 
-    <script src="algeria_cities.js"></script>
+    <!-- Script to simulate the Algeria wilayas for the standalone HTML file if needed -->
     <script>
+        // Fallback Data if algeria_cities.js is not loaded properly
+        const fallbackWilayas = [
+            { id: "16", name: "الجزائر - 16" },
+            { id: "31", name: "وهران - 31" },
+            { id: "09", name: "البليدة - 09" },
+            { id: "25", name: "قسنطينة - 25" }
+        ];
+
         const registerForm = document.getElementById('registerForm');
         const successCard = document.getElementById('successCard');
         const headerSection = document.getElementById('headerSection');
@@ -227,25 +744,26 @@
         const displayId = document.getElementById('displayId');
         let generatedCode = '';
 
-        // تعبئة الولايات من قاعدة البيانات المحاكاة
-        if (typeof algeriaWilayas !== 'undefined') {
-            algeriaWilayas.forEach(w => {
+        // Load wilayas
+        window.addEventListener('DOMContentLoaded', () => {
+            let wilayasToLoad = (typeof algeriaWilayas !== 'undefined') ? algeriaWilayas : fallbackWilayas;
+            wilayasToLoad.forEach(w => {
                 const opt = document.createElement('option');
                 opt.value = w.name;
                 opt.textContent = `${w.id} - ${w.name}`;
                 libWilaya.appendChild(opt);
             });
-        }
+        });
 
         function updateRoleDescription() {
             const role = document.getElementById('partnerRole').value;
             const desc = document.getElementById('roleDesc');
             if (role === 'library') {
-                desc.textContent = 'المكتبة يمكنها إدارة الطلبات، طباعة الفواتير، وعرض حتى 5000 كتاب.';
+                desc.textContent = '/* المكتبة يمكنها إدارة الطلبات، ومزامنة حتى 5000 كتاب */';
             } else if (role === 'publisher') {
-                desc.textContent = 'دار النشر يمكنها نشر كتب ومقالات، بميزة النشر المؤقت (7 أيام) والظهور المميز.';
+                desc.textContent = '/* دار النشر تنشر بميزة الإدراج المؤقت (7 أيام) والظهور المميز */';
             } else if (role === 'seller') {
-                desc.textContent = 'البائع الفردي يمكنه عرض 3 كتب نشطة كحد أقصى للبيع المباشر.';
+                desc.textContent = '/* البائع الفردي مسموح له بإدراج 3 عناصر فقط في قاعدة البيانات */';
             }
         }
 
@@ -287,11 +805,14 @@
 
         function copyIdAndLogin() {
             navigator.clipboard.writeText(generatedCode).then(() => {
-                alert('تم نسخ المعرف: ' + generatedCode);
+                window.location.href = 'index.html';
+            }).catch(err => {
+                alert('انسخ المعرف يدوياً: ' + generatedCode);
                 window.location.href = 'index.html';
             });
         }
     </script>
+    <script src="algeria_cities.js"></script>
 </body>
 
 </html>

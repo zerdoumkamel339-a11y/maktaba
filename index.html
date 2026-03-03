@@ -4,44 +4,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BookDZ - دخول التطبيق</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>BookDZ - بوابة الدخول</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Fira+Code:wght@400;500;600&display=swap"
+        rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="index.css">
     <style>
+        :root {
+            --dev-bg: #09090b;
+            --dev-card: rgba(15, 15, 20, 0.7);
+            --dev-border: rgba(255, 255, 255, 0.08);
+            --dev-primary: #8b5cf6;
+            /* purple */
+            --dev-secondary: #3b82f6;
+            /* blue */
+            --dev-accent: #f43f5e;
+            /* red */
+            --dev-text: #e2e8f0;
+            --dev-text-muted: #94a3b8;
+        }
+
+        body {
+            background-color: var(--dev-bg);
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: var(--dev-text);
+            font-family: 'Cairo', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Glowing Orbs */
+        .glow-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            z-index: -1;
+            pointer-events: none;
+            animation: pulse-glow 6s infinite alternate;
+        }
+
+        .glow-orb-1 {
+            top: -10%;
+            right: -5%;
+            width: 400px;
+            height: 400px;
+            background: var(--dev-primary);
+        }
+
+        .glow-orb-2 {
+            bottom: -10%;
+            left: -5%;
+            width: 300px;
+            height: 300px;
+            background: var(--dev-secondary);
+        }
+
+        @keyframes pulse-glow {
+            0% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+
+            100% {
+                transform: scale(1.1);
+                opacity: 0.5;
+            }
+        }
+
         .auth-container {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             padding: 20px;
-            background: linear-gradient(135deg, var(--bg-main) 0%, #e2e8f0 100%);
+            position: relative;
+            z-index: 1;
         }
 
         .logo-box {
             text-align: center;
             margin-bottom: 40px;
+            animation: fadeInDown 0.8s ease-out;
         }
 
-        .logo-box i {
-            font-size: 4rem;
-            color: var(--primary);
-            margin-bottom: 12px;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        /* 3D Node Styling for Logo */
+        .node-3d-card {
+            background: linear-gradient(145deg, #111827, #030712);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-right: 4px solid var(--dev-primary);
+            border-bottom: 4px solid rgba(0, 0, 0, 0.8);
+            border-radius: 20px;
+            padding: 30px;
+            transform: rotateX(8deg) rotateY(-5deg);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow:
+                -15px 15px 35px rgba(0, 0, 0, 0.7),
+                inset 1px 1px 2px rgba(255, 255, 255, 0.1);
+            position: relative;
+            animation: floatNode 6s ease-in-out infinite;
+            display: inline-block;
+            max-width: 90%;
+            margin-bottom: 20px;
+        }
+
+        @keyframes floatNode {
+
+            0%,
+            100% {
+                transform: rotateX(8deg) rotateY(-5deg) translateY(0);
+            }
+
+            50% {
+                transform: rotateX(10deg) rotateY(-8deg) translateY(-15px);
+            }
+        }
+
+        .node-3d-card:hover {
+            transform: rotateX(0deg) rotateY(0deg) scale(1.05) translateZ(30px) !important;
+            border-color: var(--dev-primary);
+            box-shadow:
+                -5px 25px 50px rgba(0, 0, 0, 0.8),
+                0 0 40px rgba(139, 92, 246, 0.3);
+            animation-play-state: paused;
         }
 
         .logo-box h1 {
             font-weight: 800;
-            font-size: 2.5rem;
-            color: var(--text-primary);
+            font-size: 3rem;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0 0 10px 0;
+            letter-spacing: -1px;
         }
 
         .logo-box p {
-            color: var(--text-secondary);
-            font-size: 1rem;
+            color: var(--dev-text-muted);
+            font-size: 1.1rem;
         }
 
         .role-cards {
@@ -49,74 +153,104 @@
             flex-direction: column;
             gap: 20px;
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
+            animation: fadeInUp 0.8s ease-out;
         }
 
         .role-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
+            background: var(--dev-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--dev-border);
+            border-radius: 20px;
             padding: 24px;
             text-align: center;
-            box-shadow: var(--shadow-md);
+            box-shadow: -10px 10px 20px rgba(0, 0, 0, 0.4);
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             overflow: hidden;
-            border: 2px solid transparent;
+            transform: rotateX(8deg) rotateY(-5deg);
+            animation: floatNode 6s ease-in-out infinite;
+        }
+
+        .role-cards .role-card:nth-child(1) {
+            animation-delay: 0.5s;
+        }
+
+        .role-cards .role-card:nth-child(2) {
+            animation-delay: 2s;
+        }
+
+        .role-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transform: skewX(-20deg);
+        }
+
+        .role-card:hover::after {
+            animation: shine-card 1.5s forwards;
+        }
+
+        @keyframes shine-card {
+            to {
+                left: 200%;
+            }
         }
 
         .role-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--primary-light);
+            transform: rotateX(0deg) rotateY(0deg) scale(1.05) translateZ(20px) !important;
+            background: rgba(30, 30, 40, 0.8);
+            animation-play-state: paused;
+            z-index: 10;
+        }
+
+        .role-customer:hover {
+            border-right-color: var(--dev-secondary);
+            box-shadow: 0 15px 35px -10px rgba(59, 130, 246, 0.3);
+        }
+
+        .role-library:hover {
+            border-right-color: var(--dev-primary);
+            box-shadow: 0 15px 35px -10px rgba(139, 92, 246, 0.3);
         }
 
         .role-icon {
             font-size: 2.5rem;
             margin-bottom: 16px;
-        }
-
-        .role-customer .role-icon {
-            color: var(--primary);
-        }
-
-        .role-library .role-icon {
-            color: var(--secondary);
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .role-card h2 {
             font-size: 1.4rem;
             font-weight: 700;
             margin-bottom: 8px;
-            color: var(--text-primary);
+            color: var(--dev-text);
         }
 
         .role-card p {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        .role-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.1);
+            font-size: 0.95rem;
+            color: var(--dev-text-muted);
         }
 
         /* Login Modal Styles */
         .login-modal {
             position: fixed;
             inset: 0;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
             display: flex;
             justify-content: center;
             align-items: center;
             opacity: 0;
             pointer-events: none;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
             z-index: 1000;
             padding: 20px;
         }
@@ -127,155 +261,260 @@
         }
 
         .login-content {
-            background: var(--bg-card);
+            background: var(--dev-card);
+            border: 1px solid var(--dev-border);
             width: 100%;
-            max-width: 360px;
-            border-radius: var(--radius-lg);
-            padding: 30px 24px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            transform: scale(0.95);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 400px;
+            border-radius: 20px;
+            padding: 35px 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
+            overflow: hidden;
         }
 
         .login-modal.active .login-content {
-            transform: scale(1);
+            transform: scale(1) translateY(0);
+        }
+
+        /* window controls */
+        .window-controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 8px;
+            direction: ltr;
+        }
+
+        .window-controls span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .window-controls span:hover {
+            transform: scale(1.2);
+        }
+
+        .window-controls .close {
+            background: #f43f5e;
+            cursor: pointer;
+        }
+
+        .window-controls .min {
+            background: #f59e0b;
+        }
+
+        .window-controls .max {
+            background: #10b981;
         }
 
         .login-header {
             text-align: center;
             margin-bottom: 24px;
-            color: var(--text-primary);
-        }
-
-        .login-header i {
-            font-size: 2.5rem;
-            color: var(--secondary);
-            margin-bottom: 12px;
+            margin-top: 10px;
         }
 
         .login-header h3 {
             font-weight: 800;
-            font-size: 1.25rem;
+            font-size: 1.5rem;
+            color: var(--dev-text);
+            margin-bottom: 5px;
+        }
+
+        .login-header p {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: #10b981;
         }
 
         .password-input-group {
             position: relative;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
+        }
+
+        .password-input-group label {
+            display: block;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: var(--dev-text-muted);
+            margin-bottom: 8px;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .password-input-group label span.keyword {
+            color: #f472b6;
+        }
+
+        .password-input-group label span.variable {
+            color: #60a5fa;
         }
 
         .password-input-group input {
             width: 100%;
-            padding: 14px;
-            padding-right: 40px;
-            border: 2px solid var(--border);
-            border-radius: var(--radius-md);
-            font-size: 1.2rem;
-            font-family: monospace;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--dev-border);
+            border-radius: 12px;
+            font-size: 1.4rem;
+            font-family: 'Fira Code', monospace;
             text-align: center;
-            letter-spacing: 4px;
+            letter-spacing: 6px;
             outline: none;
-            color: var(--text-primary);
-            transition: border-color 0.2s;
+            color: var(--dev-text);
+            transition: all 0.3s;
+            box-sizing: border-box;
+            direction: ltr;
         }
 
         .password-input-group input:focus {
-            border-color: var(--secondary);
+            border-color: var(--dev-primary);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+            background: rgba(0, 0, 0, 0.7);
         }
 
         .password-input-group i {
             position: absolute;
-            right: 14px;
-            top: 50%;
+            right: 16px;
+            top: 70%;
             transform: translateY(-50%);
-            color: var(--text-secondary);
+            color: var(--dev-text-muted);
         }
 
         .btn-login {
             width: 100%;
-            padding: 14px;
-            background: var(--gradient-secondary);
+            padding: 16px;
+            background: linear-gradient(135deg, var(--dev-primary), var(--dev-secondary));
             color: white;
             border: none;
-            border-radius: var(--radius-md);
-            font-size: 1rem;
+            border-radius: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.1rem;
             font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px -10px rgba(139, 92, 246, 0.5);
+            letter-spacing: 1px;
         }
 
         .btn-login:hover {
             transform: translateY(-2px);
+            box-shadow: 0 15px 25px -10px rgba(139, 92, 246, 0.6);
+            filter: brightness(1.1);
         }
 
         .close-login {
             position: absolute;
             top: 16px;
-            left: 16px;
+            right: 16px;
             background: transparent;
             border: none;
             font-size: 1.2rem;
-            color: var(--text-secondary);
+            color: var(--dev-text-muted);
             cursor: pointer;
+            z-index: 10;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="app-container auth-container">
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+
+    <div class="auth-container">
 
         <div class="logo-box">
-            <i class="fas fa-book-reader"></i>
-            <h1>BookDZ <span
-                    style="font-size: 0.8rem; vertical-align: middle; background: var(--secondary); color: white; padding: 2px 8px; border-radius: 10px;">SaaS</span>
-            </h1>
-            <p>المنصة المتكاملة للنشر وتوزيع الكتب في الجزائر</p>
+            <div class="node-3d-card">
+                <h1 style="margin: 0 0 10px 0;">منصة إقرأ <span
+                        style="font-size: 0.9rem; vertical-align: super; background: rgba(59, 130, 246, 0.2); border: 1px solid var(--dev-secondary); color: var(--dev-secondary); padding: 3px 10px; border-radius: 12px; font-family: 'Fira Code', monospace;">v2.0</span>
+                </h1>
+                <p style="margin: 0;">المنصة المتكاملة للنشر وتوزيع الكتب في الجزائر</p>
+            </div>
         </div>
 
         <div class="role-cards">
             <!-- Customer Route -->
             <div class="role-card role-customer" onclick="window.location.href='customer.html'">
-                <div class="role-overlay"></div>
                 <i class="fas fa-shopping-bag role-icon"></i>
-                <h2>دخول كزبون (مشتري)</h2>
+                <h2>دخول المشترين</h2>
                 <p>تصفح آلاف الكتب، اطلب التوصيل، وادفع عند الاستلام.</p>
             </div>
 
             <!-- Library/Seller Route -->
             <div class="role-card role-library" onclick="openLoginModal()">
-                <div class="role-overlay"></div>
                 <i class="fas fa-store role-icon"></i>
-                <h2>دخول الشركاء (تجار / ناشرون)</h2>
-                <p>إدارة المكتبات، دور النشر، أو البيع الفردي.</p>
+                <h2>دخول البائعين والناشرين</h2>
+                <p>إدارة المكتبات، دور النشر، ولوحة التحكم.</p>
             </div>
 
-            <div style="text-align: center; margin-top: 10px;">
-                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 15px;">هل أنت شريك جديد؟</p>
-                <a href="register_library.html"
-                    style="background: var(--bg-card); border: 1px solid var(--border); padding: 10px 20px; border-radius: var(--radius-pill); color: var(--primary); font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
-                    <i class="fas fa-plus-circle"></i> تسجيل حساب شريك جديد
-                </a>
+            <div style="text-align: center; margin-top: 30px; padding-top: 10px;">
+                <div class="node-3d-card"
+                    style="padding: 15px 30px; animation-delay: 1.2s; border-color: rgba(139, 92, 246, 0.2); background: rgba(139, 92, 246, 0.05);">
+                    <p style="font-size: 0.85rem; color: var(--dev-text-muted); margin-bottom: 12px;">تسجيل مؤسسة لأول
+                        مرة في النظام؟</p>
+                    <a href="register_library.html"
+                        style="background: var(--dev-primary); padding: 10px 20px; border-radius: 8px; color: #fff; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);">
+                        انضم كشريك لمنصة إقرأ
+                    </a>
+                </div>
             </div>
         </div>
 
         <!-- Login Modal -->
         <div class="login-modal" id="loginModal">
             <div class="login-content">
-                <button class="close-login" onclick="closeLoginModal()"><i class="fas fa-times"></i></button>
-                <div class="login-header">
-                    <i class="fas fa-lock"></i>
-                    <h3>تسجيل دخول التاجر</h3>
-                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px;">الرجاء إدخال المعرف
-                        المكون من 8 رموز</p>
+                <div class="window-controls">
+                    <span class="close" onclick="closeLoginModal()" title="إغلاق"></span>
+                    <span class="min" onclick="window.location.href='index.html'" title="الرئيسية"></span>
+                    <span class="max" onclick="window.location.reload()" title="تحديث"></span>
                 </div>
+
+                <div class="login-header">
+                    <h3>مصادقة البائعين</h3>
+                    <p dir="ltr">/* ENTER YOUR 8-CHAR SECURE ID */</p>
+                </div>
+
                 <div class="password-input-group">
-                    <i class="fas fa-key"></i>
+                    <label><span class="keyword">private</span> <span class="variable">storeKey</span> = </label>
                     <input type="password" id="libraryIdInput" maxlength="8" placeholder="********">
                 </div>
-                <button class="btn-login" onclick="handleLogin()">تسجيل الدخول</button>
+
+                <button class="btn-login" onclick="handleLogin()">> AUTHENTICATE()</button>
+
                 <p id="loginError"
-                    style="color: var(--accent); font-size: 0.85rem; text-align: center; margin-top: 12px; display: none;">
-                    المعرف غير صحيح.</p>
+                    style="color: var(--dev-accent); font-family: 'Fira Code', monospace; font-size: 0.85rem; text-align: center; margin-top: 16px; display: none; background: rgba(244, 63, 94, 0.1); padding: 8px; border-radius: 8px; border-left: 3px solid var(--dev-accent);">
+                    Error: Authentication failed. Invalid Key.
+                </p>
             </div>
         </div>
 
@@ -309,15 +548,35 @@
                 // حفظ الجلسة والدور
                 sessionStorage.setItem('currentPartnerId', id);
                 sessionStorage.setItem('currentPartnerRole', rolesMapping[id] || 'library');
-                window.location.href = 'library.html';
+
+                // تأثير بصري للنجاح
+                libraryIdInput.style.borderColor = '#10b981';
+                libraryIdInput.style.color = '#10b981';
+                setTimeout(() => {
+                    window.location.href = 'library.html';
+                }, 500);
             } else {
                 loginError.style.display = 'block';
-                libraryIdInput.style.borderColor = 'var(--accent)';
+                libraryIdInput.style.borderColor = 'var(--dev-accent)';
+                libraryIdInput.style.animation = 'shake 0.4s ease-in-out';
                 setTimeout(() => {
-                    libraryIdInput.style.borderColor = 'var(--border)';
-                }, 2000);
+                    libraryIdInput.style.borderColor = 'var(--dev-border)';
+                    libraryIdInput.style.animation = '';
+                }, 1000);
             }
         }
+
+        // Keyframe for shake animation is handled via JS trick or added here:
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                50% { transform: translateX(5px); }
+                75% { transform: translateX(-5px); }
+            }
+        `;
+        document.head.appendChild(style);
 
         // تسجيل الدخول عند الضغط على Enter
         libraryIdInput.addEventListener('keypress', function (e) {

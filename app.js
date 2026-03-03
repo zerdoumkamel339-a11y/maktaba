@@ -314,22 +314,22 @@ function initCheckoutForm() {
     algeriaWilayas.forEach(w => {
         const option = document.createElement('option');
         option.value = w.id;
-        option.textContent = `${w.id} - ${w.name}`;
+        option.textContent = `NODE.WILAYA_${w.id} ["${w.name}"]`;
         wilayaSelect.appendChild(option);
     });
 
     // تغيير البلديات عند تغيير الولاية
     wilayaSelect.addEventListener('change', (e) => {
         const wilayaId = e.target.value;
-        baladiyaSelect.innerHTML = '<option value="">اختر البلدية...</option>'; // إعادة التعيين
+        baladiyaSelect.innerHTML = '<option value="">> --SELECT_BRANCH_ID--</option>'; // إعادة التعيين
 
         if (wilayaId) {
             baladiyaSelect.disabled = false;
             const wilayaObj = algeriaWilayas.find(w => w.id == wilayaId);
-            wilayaObj.communes.forEach(c => {
+            wilayaObj.communes.forEach((c, idx) => {
                 const option = document.createElement('option');
                 option.value = c;
-                option.textContent = c;
+                option.textContent = `BRANCH.${wilayaId}${idx + 1} ["${c}"]`;
                 baladiyaSelect.appendChild(option);
             });
         } else {
