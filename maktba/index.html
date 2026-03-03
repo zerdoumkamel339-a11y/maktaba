@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BookDZ - دخول التطبيق</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+    <style>
+        .auth-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--bg-main) 0%, #e2e8f0 100%);
+        }
+
+        .logo-box {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-box i {
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: 12px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-box h1 {
+            font-weight: 800;
+            font-size: 2.5rem;
+            color: var(--text-primary);
+        }
+
+        .logo-box p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .role-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .role-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        .role-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-light);
+        }
+
+        .role-icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+
+        .role-customer .role-icon {
+            color: var(--primary);
+        }
+
+        .role-library .role-icon {
+            color: var(--secondary);
+        }
+
+        .role-card h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .role-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .role-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Login Modal Styles */
+        .login-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .login-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .login-content {
+            background: var(--bg-card);
+            width: 100%;
+            max-width: 360px;
+            border-radius: var(--radius-lg);
+            padding: 30px 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: scale(0.95);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .login-modal.active .login-content {
+            transform: scale(1);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        .login-header i {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 12px;
+        }
+
+        .login-header h3 {
+            font-weight: 800;
+            font-size: 1.25rem;
+        }
+
+        .password-input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .password-input-group input {
+            width: 100%;
+            padding: 14px;
+            padding-right: 40px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 1.2rem;
+            font-family: monospace;
+            text-align: center;
+            letter-spacing: 4px;
+            outline: none;
+            color: var(--text-primary);
+            transition: border-color 0.2s;
+        }
+
+        .password-input-group input:focus {
+            border-color: var(--secondary);
+        }
+
+        .password-input-group i {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: var(--gradient-secondary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+        }
+
+        .close-login {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: transparent;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container auth-container">
+
+        <div class="logo-box">
+            <i class="fas fa-book-reader"></i>
+            <h1>BookDZ <span
+                    style="font-size: 0.8rem; vertical-align: middle; background: var(--secondary); color: white; padding: 2px 8px; border-radius: 10px;">SaaS</span>
+            </h1>
+            <p>المنصة المتكاملة للنشر وتوزيع الكتب في الجزائر</p>
+        </div>
+
+        <div class="role-cards">
+            <!-- Customer Route -->
+            <div class="role-card role-customer" onclick="window.location.href='customer.html'">
+                <div class="role-overlay"></div>
+                <i class="fas fa-shopping-bag role-icon"></i>
+                <h2>دخول كزبون (مشتري)</h2>
+                <p>تصفح آلاف الكتب، اطلب التوصيل، وادفع عند الاستلام.</p>
+            </div>
+
+            <!-- Library/Seller Route -->
+            <div class="role-card role-library" onclick="openLoginModal()">
+                <div class="role-overlay"></div>
+                <i class="fas fa-store role-icon"></i>
+                <h2>دخول الشركاء (تجار / ناشرون)</h2>
+                <p>إدارة المكتبات، دور النشر، أو البيع الفردي.</p>
+            </div>
+
+            <div style="text-align: center; margin-top: 10px;">
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 15px;">هل أنت شريك جديد؟</p>
+                <a href="register_library.html"
+                    style="background: var(--bg-card); border: 1px solid var(--border); padding: 10px 20px; border-radius: var(--radius-pill); color: var(--primary); font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-plus-circle"></i> تسجيل حساب شريك جديد
+                </a>
+            </div>
+        </div>
+
+        <!-- Login Modal -->
+        <div class="login-modal" id="loginModal">
+            <div class="login-content">
+                <button class="close-login" onclick="closeLoginModal()"><i class="fas fa-times"></i></button>
+                <div class="login-header">
+                    <i class="fas fa-lock"></i>
+                    <h3>تسجيل دخول التاجر</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px;">الرجاء إدخال المعرف
+                        المكون من 8 رموز</p>
+                </div>
+                <div class="password-input-group">
+                    <i class="fas fa-key"></i>
+                    <input type="password" id="libraryIdInput" maxlength="8" placeholder="********">
+                </div>
+                <button class="btn-login" onclick="handleLogin()">تسجيل الدخول</button>
+                <p id="loginError"
+                    style="color: var(--accent); font-size: 0.85rem; text-align: center; margin-top: 12px; display: none;">
+                    المعرف غير صحيح.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const loginModal = document.getElementById('loginModal');
+        const libraryIdInput = document.getElementById('libraryIdInput');
+        const loginError = document.getElementById('loginError');
+
+        function openLoginModal() {
+            loginModal.classList.add('active');
+            libraryIdInput.value = '';
+            loginError.style.display = 'none';
+            setTimeout(() => libraryIdInput.focus(), 300);
+        }
+
+        function closeLoginModal() {
+            loginModal.classList.remove('active');
+        }
+
+        function handleLogin() {
+            const id = libraryIdInput.value.trim().toUpperCase();
+
+            // جلب الأكواد الصحيحة من LocalStorage
+            let validIds = JSON.parse(localStorage.getItem('validLibraryIds')) || ['A1B2C3D4'];
+            let rolesMapping = JSON.parse(localStorage.getItem('partnerRoles')) || { 'A1B2C3D4': 'library' };
+
+            // تحقق من الـ ID هل هو موجود في القائمة
+            if (validIds.includes(id)) {
+                // حفظ الجلسة والدور
+                sessionStorage.setItem('currentPartnerId', id);
+                sessionStorage.setItem('currentPartnerRole', rolesMapping[id] || 'library');
+                window.location.href = 'library.html';
+            } else {
+                loginError.style.display = 'block';
+                libraryIdInput.style.borderColor = 'var(--accent)';
+                setTimeout(() => {
+                    libraryIdInput.style.borderColor = 'var(--border)';
+                }, 2000);
+            }
+        }
+
+        // تسجيل الدخول عند الضغط على Enter
+        libraryIdInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
+
+        loginModal.addEventListener('click', function (e) {
+            if (e.target === loginModal) closeLoginModal();
+        });
+    </script>
+</body>
+
+</html>

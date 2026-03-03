@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/maktba?schema=public
+      - JWT_ACCESS_SECRET=your-access-secret-key-here
+      - JWT_REFRESH_SECRET=your-refresh-secret-key-here
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - maktba-network
+
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: maktba
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d maktba"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - maktba-network
+
+volumes:
+  postgres_data:
+
+networks:
+  maktba-network:
+    driver: bridge

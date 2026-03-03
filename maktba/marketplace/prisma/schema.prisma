@@ -1,0 +1,203 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  LIBRARY
+  PUBLISHER
+  INDIVIDUAL_SELLER
+  CUSTOMER
+  WAREHOUSE_MANAGER
+  PICKER
+  PACKER
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum StockMovementType {
+  IN
+  OUT
+  RESERVED
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String
+  role          Role      @default(CUSTOMER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  profile       Profile?
+  books         Book[]
+  orders        Order[]   @relation("CustomerOrders")
+  vendorBalance VendorBalance?
+  subscription  SubscriptionPlan?
+
+  @@map("users")
+}
+
+model Profile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  firstName   String
+  lastName    String
+  phoneNumber String?
+  wilayaId    String?
+  communeId   String?
+  address     String?
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wilaya      Wilaya?  @relation(fields: [wilayaId], references: [id])
+  commune     Commune? @relation(fields: [communeId], references: [id])
+
+  @@map("profiles")
+}
+
+model Wilaya {
+  id       String    @id @default(uuid())
+  code     Int       @unique
+  name     String
+  profiles Profile[]
+  communes Commune[]
+
+  @@map("wilayas")
+}
+
+model Commune {
+  id       String    @id @default(uuid())
+  wilayaId String
+  name     String
+
+  wilaya   Wilaya    @relation(fields: [wilayaId], references: [id], onDelete: Cascade)
+  profiles Profile[]
+
+  @@map("communes")
+}
+
+model Book {
+  id          String   @id @default(uuid())
+  title       String
+  author      String
+  description String?
+  price       Float
+  sellerId    String
+  coverImage  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  seller      User        @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  orderItems  OrderItem[]
+  inventory   Inventory?
+
+  @@map("books")
+}
+
+model Inventory {
+  id          String   @id @default(uuid())
+  bookId      String   @unique
+  totalStock  Int      @default(0)
+  reserved    Int      @default(0)
+  available   Int      @default(0) // available = totalStock - reserved
+  location    String?
+
+  book        Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  movements   StockMovement[]
+
+  @@map("inventories")
+}
+
+model StockMovement {
+  id          String            @id @default(uuid())
+  inventoryId String
+  quantity    Int
+  type        StockMovementType
+  createdAt   DateTime          @default(now())
+  reference   String?           // E.g., Order ID or manual entry
+
+  inventory   Inventory         @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+
+  @@map("stock_movements")
+}
+
+model Order {
+  id            String      @id @default(uuid())
+  customerId    String
+  totalAmount   Float
+  status        OrderStatus @default(PENDING)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  customer      User        @relation("CustomerOrders", fields: [customerId], references: [id], onDelete: Cascade)
+  items         OrderItem[]
+  shipment      Shipment?
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String   @id @default(uuid())
+  orderId     String
+  bookId      String
+  quantity    Int
+  priceAtTime Float    // Price stored in case book price changes in future
+
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  book        Book     @relation(fields: [bookId], references: [id], onDelete: Restrict) // Prevent deleting book if in order
+
+  @@map("order_items")
+}
+
+model Shipment {
+  id          String   @id @default(uuid())
+  orderId     String   @unique
+  trackingNum String?
+  status      OrderStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("shipments")
+}
+
+model VendorBalance {
+  id             String   @id @default(uuid())
+  vendorId       String   @unique
+  currentBalance Float    @default(0)
+  pendingBalance Float    @default(0)
+  updatedAt      DateTime @updatedAt
+
+  vendor         User     @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@map("vendor_balances")
+}
+
+model SubscriptionPlan {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  planName    String
+  storageFee  Float    @default(0)
+  expiresAt   DateTime? // For publishers auto-delete
+  lastBilled  DateTime?
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscription_plans")
+}
