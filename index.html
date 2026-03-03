@@ -9,6 +9,13 @@
         href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Fira+Code:wght@400;500;600&display=swap"
         rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Firebase SDKs (Compat Version) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
     <style>
         :root {
             --dev-bg: #09090b;
@@ -583,8 +590,10 @@
                 loginError.style.display = 'block';
                 if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-login-credentials') {
                     loginError.textContent = '❌ البريد الإلكتروني أو كلمة السر غير صحيحة.';
+                } else if (error.code === 'auth/too-many-requests') {
+                    loginError.textContent = '❌ محاولات كثيرة خاطئة، يرجى المحاولة لاحقاً.';
                 } else {
-                    loginError.textContent = '⚠️ حدث خطأ أثناء الدخول. يرجى المحاولة لاحقاً.';
+                    loginError.textContent = `⚠️ حدث خطأ أثناء الدخول: ${error.message}`;
                 }
 
                 // Visual feedback for error
@@ -630,11 +639,6 @@
         });
 
     </script>
-    <!-- Firebase SDKs (Compat Version) -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="firebase-config.js"></script>
 </body>
 
 </html>
