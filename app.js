@@ -1,11 +1,24 @@
 // Mock Data
 const categories = [
     { id: 'all', name: 'الكل', icon: '🌍' },
-    { id: 'university', name: 'جامعية', icon: '🎓' },
     { id: 'novels', name: 'روايات', icon: '📖' },
+    { id: 'history', name: 'تاريخ', icon: '🏛️' },
     { id: 'religion', name: 'دين', icon: '🕌' },
+    { id: 'self_improvement', name: 'تنمية بشرية', icon: '💡' },
+    { id: 'cooking', name: 'طبخ', icon: '🍳' },
     { id: 'kids', name: 'أطفال', icon: '🧸' },
-    { id: 'languages', name: 'لغات', icon: '🌐' }
+    { id: 'education_languages', name: 'تعليم ولغات', icon: '🌐' },
+    { id: 'school_books', name: 'كتب مدرسية', icon: '🎒' },
+    { id: 'university', name: 'مراجع جامعية', icon: '🎓' },
+    { id: 'science', name: 'علوم', icon: '🔬' },
+    { id: 'tech_programming', name: 'تقنية وبرمجة', icon: '💻' },
+    { id: 'economy_business', name: 'اقتصاد وأعمال', icon: '💼' },
+    { id: 'philosophy', name: 'فلسفة وفكر', icon: '🤔' },
+    { id: 'art_culture', name: 'فن وثقافة', icon: '🎨' },
+    { id: 'poetry_literature', name: 'شعر وأدب', icon: '📜' },
+    { id: 'law', name: 'قانون', icon: '⚖️' },
+    { id: 'health', name: 'صحة', icon: '⚕️' },
+    { id: 'manga', name: 'مانغا', icon: '🎌' }
 ];
 
 const libraries = [
@@ -41,6 +54,8 @@ const books = [
         category: 'university',
         cover: 'https://images.unsplash.com/photo-1532012197267-da84d127e765?q=80&w=200&auto=format&fit=crop',
         desc: 'كتاب شامل يغطي أساسيات الذكاء الاصطناعي وتطبيقاته الحديثة بأسلوب مبسط للطلاب.',
+        publisherId: 'A1B2C3D4',
+        date: new Date().toISOString(),
         availableAt: [
             { libId: 'A1B2C3D4', name: 'مكتبة اقرأ', price: '1500', distance: '1.2 كم' },
             { libId: 'X9Y8Z7K6', name: 'مكتبة الجامعة', price: '1450', distance: '2.5 كم' }
@@ -54,6 +69,8 @@ const books = [
         category: 'novels',
         cover: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=200&auto=format&fit=crop',
         desc: 'رواية عالمية تحكي قصة الراعي المتجول بحثاً عن كنزه المنشود.',
+        publisherId: 'A1B2C3D4',
+        date: new Date().toISOString(),
         availableAt: [
             { libId: 'A1B2C3D4', name: 'مكتبة اقرأ', price: '800', distance: '1.2 كم' },
             { libId: 'M5N6P7Q8', name: 'عالم المعرفة', price: '850', distance: '3.0 كم' }
@@ -67,6 +84,8 @@ const books = [
         category: 'religion',
         cover: 'https://images.unsplash.com/photo-1601123498453-623bb65bc674?q=80&w=200&auto=format&fit=crop',
         desc: 'بحث متخصص في السيرة النبوية حاز على الجائزة الأولى في مسابقة رابطة العالم الإسلامي.',
+        publisherId: 'M5N6P7Q8',
+        date: new Date().toISOString(),
         availableAt: [
             { libId: 'M5N6P7Q8', name: 'عالم المعرفة', price: '1200', distance: '3.0 كم' }
         ]
@@ -79,6 +98,8 @@ const books = [
         category: 'languages',
         cover: 'https://images.unsplash.com/photo-1546422401-68b415cbf822?q=80&w=200&auto=format&fit=crop',
         desc: 'دليل مبسط لتعلم اللغة الفرنسية من الصفر حتى الاحتراف.',
+        publisherId: 'X9Y8Z7K6',
+        date: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(), // Mock expired item
         availableAt: [
             { libId: 'A1B2C3D4', name: 'مكتبة اقرأ', price: '600', distance: '1.2 كم' },
             { libId: 'X9Y8Z7K6', name: 'مكتبة الجامعة', price: '500', distance: '2.5 كم' }
@@ -100,9 +121,24 @@ const modalBody = document.getElementById('modalBody');
 
 // Initialize App
 function init() {
+    // 7-day SaaS Logic for Publishers
+    const now = new Date().getTime();
+    const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+
+    // Filter out expired items from Publishers
+    const activeBooks = books.filter(book => {
+        const uploadedAt = new Date(book.date).getTime();
+        // Assume A1B2C3D4 is a Library (no expiration), but others might be publishers
+        // In real SaaS, roles would be checked here
+        if (book.publisherId !== 'A1B2C3D4' && (now - uploadedAt > sevenDaysMs)) {
+            return false;
+        }
+        return true;
+    });
+
     renderCategories();
     renderLibraries();
-    renderBooks(books);
+    renderBooks(activeBooks);
 
     // Search Feature
     searchInput.addEventListener('input', (e) => {

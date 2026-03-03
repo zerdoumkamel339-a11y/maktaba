@@ -1,67 +1,109 @@
 let vendorOrders = [];
+let currentPartner = {
+    id: sessionStorage.getItem('currentPartnerId') || 'A1B2C3D4',
+    role: sessionStorage.getItem('currentPartnerRole') || 'library',
+    name: 'مكتبة اقرأ' // Default
+};
 
 const vendorOrdersList = document.getElementById('vendorOrdersList');
 const pendingCountEl = document.getElementById('pendingCount');
 
-async function checkAuth() {
-    const { data: { session }, error } = await sb.auth.getSession();
-    if (!session || error) {
-        window.location.href = 'login.html';
-        return;
-    }
-
-    const { data: profile } = await sb.from('profiles').select('role, store_id').eq('id', session.user.id).single();
-    if (!profile || profile.role !== 'bookstore') {
-        alert('هذه الصفحة مخصصة للمكتبات فقط!');
-        window.location.href = 'home.html';
-        return;
-    }
-
-    // Set UI info
-    const storeIdDisplay = document.querySelector('.lib-id-badge');
-    if (storeIdDisplay) storeIdDisplay.innerText = profile.store_id;
-
-    initLibrary();
-}
-
-async function initLibrary() {
-    await loadOrdersFromSupabase();
+function initLibrary() {
+    setupPartnerProfile();
+    loadOrdersFromStorage();
     renderOrders();
+    checkExpirationLogic(); // 7-day logic for publishers
 }
 
-async function loadOrdersFromSupabase() {
-    const { data: { session } } = await sb.auth.getSession();
-    if (!session) return;
+function setupPartnerProfile() {
+    const idDisp = document.getElementById('partnerIdDisplay');
+    const nameDisp = document.getElementById('partnerNameDisplay');
+    const roleBadge = document.getElementById('roleBadgeDisplay');
+    const roleIcon = document.getElementById('roleIconSet');
 
-    // Filter by seller_id (the library's user id)
-    const { data, error } = await sb.from('orders')
-        .select('*')
-        .eq('seller_id', session.user.id)
-        .order('created_at', { ascending: false });
+    if (idDisp) idDisp.textContent = currentPartner.id;
 
-    if (!error && data) {
-        vendorOrders = data.map(o => {
-            const items = Array.isArray(o.items) ? o.items : [];
-            const titles = items.map(item => item.title).join(', ') || 'كتاب مجهول';
-
-            return {
-                id: o.id,
-                time: new Date(o.created_at).toLocaleString('ar-DZ'),
-                customer: o.phone,
-                wilaya: o.state,
-                baladiya: o.municipality,
-                phone: o.phone,
-                deliveryCorp: o.delivery_corp || null,
-                bookTitle: titles,
-                price: o.total_price,
-                qty: items.length || 1,
-                status: o.status || 'pending'
-            };
-        });
+    // Simulate getting name from ID
+    if (currentPartner.id !== 'A1B2C3D4') {
+        currentPartner.name = 'شريك BookDZ الجديد';
     }
+    if (nameDisp) nameDisp.textContent = currentPartner.name;
+
+    // Role-specific UI setup
+    if (roleBadge) {
+        let roleText = 'مكتبة (Enterprise)';
+        let iconClass = 'fa-store';
+        if (currentPartner.role === 'publisher') {
+            roleText = 'دار نشر (Pro)';
+            iconClass = 'fa-print';
+        } else if (currentPartner.role === 'seller') {
+            roleText = 'بائع فردي (Basic)';
+            iconClass = 'fa-user';
+        }
+        roleBadge.textContent = roleText;
+        if (roleIcon) roleIcon.innerHTML = `<i class="fas ${iconClass}"></i>`;
+    }
+}
+
+function checkExpirationLogic() {
+    if (currentPartner.role !== 'publisher') return;
+
+    // Simulated 7-day expiration for publishers
+    // In a real app, this would be handled on the server
+    const books = JSON.parse(localStorage.getItem('maktbaBooks')) || [];
+    const now = new Date().getTime();
+    const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+
+    let expiredCount = 0;
+    const activeBooks = books.filter(book => {
+        if (book.publisherId === currentPartner.id) {
+            const uploadedAt = new Date(book.date || now).getTime();
+            if (now - uploadedAt > sevenDaysMs) {
+                expiredCount++;
+                return false;
+            }
+        }
+        return true;
+    });
+
+    if (expiredCount > 0) {
+        localStorage.setItem('maktbaBooks', JSON.stringify(activeBooks));
+        console.log(`${expiredCount} items expired due to 7-day Pro policy.`);
+        // alert(`تنبيه: تم أرشفة ${expiredCount} منشورات لتجاوزها مدة 7 أيام (حسب خطة دار النشر).`);
+    }
+}
+
+function loadOrdersFromStorage() {
+    const saved = localStorage.getItem('maktbaOrders');
+    if (saved) {
+        vendorOrders = JSON.parse(saved);
+    } else {
+        // Mock data
+        vendorOrders = [
+            {
+                id: 'ORD-998273',
+                time: 'منذ 10 دقائق',
+                customer: 'محمد وليد',
+                wilaya: '16 - الجزائر',
+                baladiya: 'الجزائر الوسطى',
+                phone: '0555123456',
+                deliveryCorp: 'Yalidine Express',
+                bookTitle: 'مقدمة في الذكاء الاصطناعي',
+                price: '1500',
+                qty: 1,
+                status: 'pending'
+            }
+        ];
+        saveOrdersToStorage();
+    }
+}
+
+function saveOrdersToStorage() {
+    localStorage.setItem('maktbaOrders', JSON.stringify(vendorOrders));
 }
 
 function renderOrders() {
+    if (!vendorOrdersList) return;
     vendorOrdersList.innerHTML = '';
     let pendingCount = 0;
 
@@ -97,12 +139,12 @@ function renderOrders() {
         } else if (order.status === 'accepted') {
             actionsHtml = `
                 <div class="order-actions no-print" style="margin-top:12px;">
-                    <div style="color: var(--secondary); font-weight: bold; flex: 1; display:flex; align-items:center; gap:8px;">
+                    <button class="btn-accept" style="background:#475569; padding: 8px 16px;" onclick="printOrder('${order.id}')">
+                        <i class="fas fa-print"></i> طباعة الوصل (فاتورة)
+                    </button>
+                    <div style="color: var(--secondary); font-weight: bold; flex: 1; display:flex; align-items:center; gap:8px; justify-content: flex-end;">
                         <i class="fas fa-check-circle"></i> تم القبول
                     </div>
-                    <button class="btn-accept" style="background:#475569; padding: 8px 16px;" onclick="printOrder('${order.id}')">
-                        <i class="fas fa-print"></i> طباعة الوصل
-                    </button>
                 </div>`;
         } else {
             actionsHtml = `<div class="no-print" style="color: var(--accent); font-weight: bold; text-align: center; margin-top:12px;"><i class="fas fa-times-circle"></i> تم الرفض</div>`;
@@ -121,9 +163,9 @@ function renderOrders() {
                         <i class="fas fa-book" style="color: var(--text-secondary)"></i>
                     </div>
                     <div class="order-book-info" style="flex:1;">
-                        <h4>الكتاب: ${order.bookTitle} (x${order.qty})</h4>
+                        <h4>العنصر: ${order.bookTitle} (x${order.qty})</h4>
                         <p style="color: var(--text-secondary); margin-top:4px;">
-                            <i class="fas fa-truck"></i> توصيل عبر: <strong>${order.deliveryCorp || 'غير محدد'}</strong>
+                            <i class="fas fa-truck"></i> التوصيل: <strong>${order.deliveryCorp || 'Aramex / COD'}</strong>
                         </p>
                     </div>
                     <div style="color: var(--primary); font-weight: bold; font-size: 1.2rem;">
@@ -133,7 +175,10 @@ function renderOrders() {
 
                 <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 12px; font-size: 0.9rem; border: 1px bordered var(--border);">
                     <div style="margin-bottom: 4px;"><i class="fas fa-map-marker-alt" style="color:var(--accent); width:20px;"></i> <strong>العنوان:</strong> ${order.baladiya}، ${order.wilaya}</div>
-                    <div><i class="fas fa-phone-alt" style="color:var(--secondary); width:20px;"></i> <strong>رقم الهاتف:</strong> <span dir="ltr">${order.phone}</span></div>
+                    <div><i class="fas fa-phone-alt" style="color:var(--secondary); width:20px;"></i> <strong>الهاتف:</strong> <span dir="ltr">${order.phone}</span></div>
+                    <div style="margin-top: 8px; border-top: 1px solid #ddd; padding-top: 4px; font-size: 0.75rem; color: #666;">
+                        BookDZ SaaS Invoice - الدفع عند الاستلام (COD)
+                    </div>
                 </div>
             </div>
 
@@ -142,51 +187,35 @@ function renderOrders() {
         vendorOrdersList.appendChild(div);
     });
 
-    pendingCountEl.textContent = pendingCount;
+    if (pendingCountEl) pendingCountEl.textContent = pendingCount;
     if (vendorOrders.length === 0) {
         vendorOrdersList.innerHTML = '<p style="text-align:center; color: var(--text-secondary); margin-top: 20px;">لا توجد طلبات قيد الانتظار حالياً.</p>';
     }
 }
 
-window.acceptOrder = async function (orderId) {
+window.acceptOrder = function (orderId) {
     const order = vendorOrders.find(o => o.id === orderId);
     if (order) {
         const selectEl = document.getElementById(`delivery-select-${orderId}`);
-        const deliveryCorp = selectEl ? selectEl.value : 'Yalidine Express';
-
-        const { error } = await sb.from('orders').update({
-            status: 'accepted',
-            delivery_corp: deliveryCorp
-        }).eq('id', orderId);
-
-        if (!error) {
-            order.status = 'accepted';
-            order.deliveryCorp = deliveryCorp;
-            renderOrders();
-        } else {
-            alert('خطأ في تحديث الطلب: ' + error.message);
+        if (selectEl) {
+            order.deliveryCorp = selectEl.value;
         }
+        order.status = 'accepted';
+        saveOrdersToStorage();
+        renderOrders();
     }
 }
 
-window.updateOrderStatus = async function (orderId, newStatus) {
+window.updateOrderStatus = function (orderId, newStatus) {
     const order = vendorOrders.find(o => o.id === orderId);
     if (order) {
-        const { error } = await sb.from('orders').update({
-            status: newStatus
-        }).eq('id', orderId);
-
-        if (!error) {
-            order.status = newStatus;
-            renderOrders();
-        } else {
-            alert('خطأ في تحديث الحالة: ' + error.message);
-        }
+        order.status = newStatus;
+        saveOrdersToStorage();
+        renderOrders();
     }
 }
 
 window.printOrder = function (orderId) {
-    // نقوم بتطبيق كلاس مؤقت على الكارد لتلوينه للطباعة، وإخفاء البقية
     const allCards = document.querySelectorAll('.order-card');
     allCards.forEach(card => card.classList.add('hide-for-print'));
 
@@ -196,16 +225,16 @@ window.printOrder = function (orderId) {
         targetCard.classList.add('printing-now');
         window.print();
 
-        // إرجاع كل شيء لطبيعته بعد الطباعة
         allCards.forEach(card => card.classList.remove('hide-for-print'));
         targetCard.classList.remove('printing-now');
     }
 }
 
-document.addEventListener('DOMContentLoaded', checkAuth);
-
-window.logout = async function () {
-    const { error } = await sb.auth.signOut();
-    localStorage.clear();
-    window.location.href = 'login.html';
+window.copyMyId = function () {
+    navigator.clipboard.writeText(currentPartner.id).then(() => {
+        alert('تم نسخ معرف الشريك: ' + currentPartner.id);
+    });
 }
+
+document.addEventListener('DOMContentLoaded', initLibrary);
+

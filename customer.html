@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BookDZ - منصة المكتبات المحلية</title>
+    <meta name="description" content="البحث عن الكتب في المكتبات المحلية بسهولة وطلبها للبيت أو حجزها في المكتبة">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="checkout_style.css">
+</head>
+
+<body>
+    <!-- App Container -->
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-top">
+                <div class="user-greeting">
+                    <img src="https://i.pravatar.cc/100?img=11" alt="User Avatar" class="avatar">
+                    <div class="greeting-text">
+                        <span class="hello">مرحباً، محمد 👋</span>
+                        <span class="location"><i class="fas fa-map-marker-alt"></i> الجزائر العاصمة</span>
+                    </div>
+                </div>
+                <button class="notifications-btn" aria-label="الإشعارات">
+                    <i class="far fa-bell"></i>
+                    <span class="badge"></span>
+                </button>
+            </div>
+
+            <div class="search-bar">
+                <i class="fas fa-search search-icon"></i>
+                <label for="searchInput"></label><input type="text" id="searchInput"
+                    placeholder="ابحث عن كتاب، مؤلف، أو مكتبة...">
+                <button class="filter-btn" aria-label="تصفية"><i class="fas fa-sliders-h"></i></button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Categories -->
+            <section class="section categories-section">
+                <h2 class="section-title">التصنيفات</h2>
+                <div class="categories-list" id="categoriesList">
+                    <!-- Categories injected by JS -->
+                </div>
+            </section>
+
+            <!-- Featured Libraries -->
+            <section class="section libraries-section">
+                <div class="section-header">
+                    <h2 class="section-title">أقرب المكتبات إليك</h2>
+                    <a href="#" class="see-all">عرض الكل</a>
+                </div>
+                <div class="libraries-list" id="librariesList">
+                    <!-- Libraries injected by JS -->
+                </div>
+            </section>
+
+            <!-- Popular Books -->
+            <section class="section books-section">
+                <div class="section-header">
+                    <h2 class="section-title">الكتب الأكثر طلباً</h2>
+                    <a href="#" class="see-all">عرض الكل</a>
+                </div>
+                <div class="books-grid" id="booksList">
+                    <!-- Books injected by JS -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Book Detail Modal Overlay -->
+        <div class="modal-overlay" id="bookModal">
+            <div class="modal-content">
+                <button class="close-modal" id="closeModalBtn"><i class="fas fa-times"></i></button>
+                <div id="modalBody">
+                    <!-- Detail content injected by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Checkout Form Modal -->
+        <div class="modal-overlay" id="checkoutModal">
+            <div class="modal-content checkout-content">
+                <button class="close-modal" id="closeCheckoutBtn"><i class="fas fa-times"></i></button>
+                <div class="checkout-header">
+                    <h3>أكمل الطلب</h3>
+                    <p>الرجاء التأكد من معلومات التوصيل</p>
+                </div>
+                <form id="checkoutForm" class="checkout-form">
+                    <div class="form-group">
+                        <label for="nameInput">الاسم واللقب</label>
+                        <input type="text" id="nameInput" placeholder="مثال: محمد علي" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="wilayaSelect">الولاية</label>
+                        <select id="wilayaSelect" required>
+                            <option value="">اختر الولاية...</option>
+                            <!-- Injected by JS -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="baladiyaSelect">البلدية</label>
+                        <select id="baladiyaSelect" required disabled>
+                            <option value="">اختر البلدية...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="phoneInput">رقم الهاتف</label>
+                        <input type="tel" id="phoneInput" placeholder="مثال: 0550000000" pattern="0[567][0-9]{8}"
+                            required>
+                    </div>
+                    <button type="submit" class="order-btn">تأكيد الطلب الآن</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-compass"></i>
+                <span>استكشف</span>
+            </a>
+            <a href="#" class="nav-item cart-nav">
+                <div class="cart-icon-wrapper">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-badge">0</span>
+                </div>
+                <span>الطلبات</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-heart"></i>
+                <span>المفضلة</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>حسابي</span>
+            </a>
+        </nav>
+    </div>
+
+    <script src="algeria_cities.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
