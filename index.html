@@ -501,20 +501,31 @@
 
                 <div class="login-header">
                     <h3>مصادقة البائعين</h3>
-                    <p dir="ltr">/* ENTER YOUR 8-CHAR SECURE ID */</p>
+                    <p dir="ltr">/* ENTER YOUR ACCOUNT CREDENTIALS */</p>
                 </div>
 
                 <div class="password-input-group">
-                    <label><span class="keyword">private</span> <span class="variable">storeKey</span> = </label>
-                    <input type="password" id="libraryIdInput" maxlength="8" placeholder="********">
+                    <label><span class="keyword">let</span> <span class="variable">email</span> = </label>
+                    <input type="email" id="loginEmail" placeholder="'example@gmail.com'" style="flex: 1;">
+                </div>
+
+                <div class="password-input-group">
+                    <label><span class="keyword">const</span> <span class="variable">pass</span> = </label>
+                    <input type="password" id="loginPassword" placeholder="********" style="flex: 1;">
                 </div>
 
                 <button class="btn-login" onclick="handleLogin()">> AUTHENTICATE()</button>
 
                 <p id="loginError"
                     style="color: var(--dev-accent); font-family: 'Fira Code', monospace; font-size: 0.85rem; text-align: center; margin-top: 16px; display: none; background: rgba(244, 63, 94, 0.1); padding: 8px; border-radius: 8px; border-left: 3px solid var(--dev-accent);">
-                    Error: Authentication failed. Invalid Key.
+                    Error: Access Denied.
                 </p>
+
+                <div style="text-align: center; margin-top: 15px;">
+                    <a href="register_library.html"
+                        style="font-size: 0.8rem; color: var(--dev-primary); text-decoration: none;">ليس لديك حساب؟ انضم
+                        كشريك الآن</a>
+                </div>
             </div>
         </div>
 
@@ -522,51 +533,87 @@
 
     <script>
         const loginModal = document.getElementById('loginModal');
-        const libraryIdInput = document.getElementById('libraryIdInput');
+        const loginEmailInput = document.getElementById('loginEmail');
+        const loginPasswordInput = document.getElementById('loginPassword');
         const loginError = document.getElementById('loginError');
 
         function openLoginModal() {
             loginModal.classList.add('active');
-            libraryIdInput.value = '';
+            loginEmailInput.value = '';
+            loginPasswordInput.value = '';
             loginError.style.display = 'none';
-            setTimeout(() => libraryIdInput.focus(), 300);
         }
-
         function closeLoginModal() {
             loginModal.classList.remove('active');
         }
 
-        function handleLogin() {
-            const id = libraryIdInput.value.trim().toUpperCase();
+        async function handleLogin() {
+            const email = loginEmailInput.value.trim();
+            const password = loginPasswordInput.value;
+            if (!email || !password) return;
 
-            // جلب الأكواد الصحيحة من LocalStorage
-            let validIds = JSON.parse(localStorage.getItem('validLibraryIds')) || ['A1B2C3D4'];
-            let rolesMapping = JSON.parse(localStorage.getItem('partnerRoles')) || { 'A1B2C3D4': 'library' };
+            const loginBtn = document.querySelector('.btn-login');
+            const originalText = loginBtn.textContent;
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'جاري التحقق...';
+            loginError.style.display = 'none';
 
-            // تحقق من الـ ID هل هو موجود في القائمة
-            if (validIds.includes(id)) {
-                // حفظ الجلسة والدور
-                sessionStorage.setItem('currentPartnerId', id);
-                sessionStorage.setItem('currentPartnerRole', rolesMapping[id] || 'library');
+            try {
+                // 1. Sign in with Firebase Auth
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const uid = userCredential.user.uid;
 
-                // تأثير بصري للنجاح
-                libraryIdInput.style.borderColor = '#10b981';
-                libraryIdInput.style.color = '#10b981';
-                setTimeout(() => {
+                // 2. Fetch Partner Data from Firestore using UID
+                const doc = await db.collection('partners').doc(uid).get();
+
+                if (doc.exists) {
+                    const partner = doc.data();
+                    sessionStorage.setItem('currentPartnerId', partner.id);
+                    sessionStorage.setItem('currentPartnerRole', partner.role);
+                    sessionStorage.setItem('currentPartnerName', partner.name);
+                    sessionStorage.setItem('currentPartnerUID', uid);
+
                     window.location.href = 'library.html';
-                }, 500);
-            } else {
+                } else {
+                    loginError.style.display = 'block';
+                    loginError.textContent = '❌ لم يتم العثور على بيانات الشريك. تواصل مع الدعم.';
+                }
+            } catch (error) {
+                console.error("Login Error:", error);
                 loginError.style.display = 'block';
-                libraryIdInput.style.borderColor = 'var(--dev-accent)';
-                libraryIdInput.style.animation = 'shake 0.4s ease-in-out';
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-login-credentials') {
+                    loginError.textContent = '❌ البريد الإلكتروني أو كلمة السر غير صحيحة.';
+                } else {
+                    loginError.textContent = '⚠️ حدث خطأ أثناء الدخول. يرجى المحاولة لاحقاً.';
+                }
+
+                // Visual feedback for error
+                loginPasswordInput.style.borderColor = 'var(--dev-accent)';
+                loginPasswordInput.style.animation = 'shake 0.4s ease-in-out';
                 setTimeout(() => {
-                    libraryIdInput.style.borderColor = 'var(--dev-border)';
-                    libraryIdInput.style.animation = '';
+                    loginPasswordInput.style.borderColor = 'var(--dev-border)';
+                    loginPasswordInput.style.animation = '';
                 }, 1000);
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = originalText;
             }
         }
 
-        // Keyframe for shake animation is handled via JS trick or added here:
+        // تسجيل الدخول عند الضغط على Enter
+        loginPasswordInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
+
+        loginEmailInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                loginPasswordInput.focus();
+            }
+        });
+
+        // Keyframe for shake animation
         const style = document.createElement('style');
         style.innerHTML = `
             @keyframes shake {
@@ -578,17 +625,16 @@
         `;
         document.head.appendChild(style);
 
-        // تسجيل الدخول عند الضغط على Enter
-        libraryIdInput.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                handleLogin();
-            }
-        });
-
         loginModal.addEventListener('click', function (e) {
             if (e.target === loginModal) closeLoginModal();
         });
+
     </script>
+    <!-- Firebase SDKs (Compat Version) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
 </body>
 
 </html>

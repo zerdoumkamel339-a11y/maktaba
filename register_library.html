@@ -698,31 +698,72 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                <label class="text-3d"><span class="keyword">let</span> <span class="variable">authEmail</span> =
+                </label>
+                <div class="node-3d-card">
+                    <input type="email" id="libEmail" class="text-3d" placeholder="'example@gmail.com'" required
+                        autocomplete="email">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="text-3d"><span class="keyword">const</span> <span class="variable">secureKey</span> =
+                </label>
+                <div class="node-3d-card" style="position: relative;">
+                    <input type="password" id="libPassword" class="text-3d" placeholder="'كلمة السر (6 أحرف على الأقل)'"
+                        required minlength="6" autocomplete="new-password">
+                    <span onclick="togglePassword()"
+                        style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--dev-text-muted); font-size: 1rem;">
+                        <i class="far fa-eye" id="toggleIcon"></i>
+                    </span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="text-3d"><span class="keyword">const</span> <span class="variable">confirmKey</span> =
+                </label>
+                <div class="node-3d-card" style="position: relative;">
+                    <input type="password" id="libPasswordConfirm" class="text-3d"
+                        placeholder="'أعد كتابة كلمة السر...'" required minlength="6" autocomplete="new-password">
+                    <span onclick="togglePasswordConfirm()"
+                        style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--dev-text-muted); font-size: 1rem;">
+                        <i class="far fa-eye" id="toggleIconConfirm"></i>
+                    </span>
+                </div>
+                <div id="passwordMatchError"
+                    style="color: #f43f5e; font-size: 0.75rem; margin-top: 8px; display: none; font-family: 'Fira Code', monospace;">
+                    ❌ ERROR: كلمتا السر غير متطابقتين
+                </div>
+            </div>
+
             <button type="submit" class="btn-submit text-3d">> EXECUTE_REGISTRATION()</button>
+
+
 
             <div style="text-align: center;">
                 <a href="index.html" class="btn-back"><i class="fas fa-chevron-left"></i> return to_main();</a>
             </div>
         </form>
 
-        <!-- نجاح التسجيل -->
         <div class="success-card" id="successCard">
             <i class="fas fa-check-circle"></i>
-            <h2>تأكيد توليد الحساب</h2>
-            <p style="color:var(--dev-text-muted); font-size: 0.9rem;">تم فتح المصادقة بنجاح. هذا المعرف السري <br>هو
-                مفتاح الدخول إلى لوحة التحكم (Dashboard).</p>
+            <h2>تم إنشاء الحساب بنجاح!</h2>
+            <p style="color:var(--dev-text-muted); font-size: 0.95rem;">تم تفعيل حساب الشريك الخاص بك. <br>يمكنك الآن
+                تسجيل الدخول باستخدام بريدك الإلكتروني.</p>
 
-            <div class="generated-id" id="displayId">--------</div>
-
-            <div class="warning-text">
-                <i class="fas fa-exclamation-triangle"></i> ALERT: يرجى نسخ أو حفظ هذا المفتاح محلياً. لا تشاركه عبر
-                الشبكة فبه تدار صلاحيات متجرك بالكامل!
+            <div class="warning-text"
+                style="background: rgba(16, 185, 129, 0.1); border-color: #10b981; color: #10b981;">
+                <i class="fas fa-info-circle"></i> تم ربط حسابك بعنوان البريد الإلكتروني الذي أدخلته. يرجى استخدامه عند
+                الدخول مستقبلاً.
             </div>
 
-            <button class="btn-submit" onclick="copyIdAndLogin()"
-                style="background: #10b981; box-shadow: 0 10px 20px -10px rgba(16, 185, 129, 0.5);">
-                > COPY_KEY_AND_LOGIN();
-            </button>
+            <div style="margin-top: 25px;">
+                <button class="btn-submit" onclick="window.location.href='index.html'"
+                    style="background: #10b981; box-shadow: 0 10px 20px -10px rgba(16, 185, 129, 0.5);">
+                    > GO_TO_LOGIN();
+                </button>
+            </div>
         </div>
 
     </div>
@@ -778,40 +819,126 @@
             return newId;
         }
 
-        registerForm.addEventListener('submit', (e) => {
+        // Initialize Firebase Auth & Firestore
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Toggle password visibility
+        function togglePassword() {
+            const passInput = document.getElementById('libPassword');
+            const icon = document.getElementById('toggleIcon');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                icon.className = 'far fa-eye-slash';
+            } else {
+                passInput.type = 'password';
+                icon.className = 'far fa-eye';
+            }
+        }
+
+        function togglePasswordConfirm() {
+            const passInput = document.getElementById('libPasswordConfirm');
+            const icon = document.getElementById('toggleIconConfirm');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                icon.className = 'far fa-eye-slash';
+            } else {
+                passInput.type = 'password';
+                icon.className = 'far fa-eye';
+            }
+        }
+
+        registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // 1. توليد كود المكتبة ورصد الدور
-            generatedCode = generateLibraryId();
+            const libName = document.getElementById('libName').value.trim();
             const role = document.getElementById('partnerRole').value;
+            const wilayaSelectElement = document.getElementById('libWilaya');
+            const wilayaName = wilayaSelectElement.options[wilayaSelectElement.selectedIndex].text;
+            const email = document.getElementById('libEmail').value.trim();
+            const password = document.getElementById('libPassword').value;
+            const passwordConfirm = document.getElementById('libPasswordConfirm').value;
+            const phone = document.getElementById('libPhone').value.trim();
+            const matchError = document.getElementById('passwordMatchError');
 
-            // 2. إظهار الإشعار الناجح
-            displayId.textContent = generatedCode;
+            // التحقق من تطابق كلمتي السر
+            if (password !== passwordConfirm) {
+                matchError.style.display = 'block';
+                document.getElementById('libPasswordConfirm').focus();
+                return;
+            } else {
+                matchError.style.display = 'none';
+            }
 
-            registerForm.style.display = 'none';
-            headerSection.style.display = 'none';
-            successCard.style.display = 'block';
+            const submitBtn = registerForm.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '> PROCESSING...';
 
-            // محلياً: نحفظ الكود المتولد لنسمح للتاجر بالدخول به للتجربة
-            let validIds = JSON.parse(localStorage.getItem('validLibraryIds')) || ['A1B2C3D4'];
-            validIds.push(generatedCode);
-            localStorage.setItem('validLibraryIds', JSON.stringify(validIds));
+            try {
+                // 1. Create user in Firebase Auth
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const uid = userCredential.user.uid;
 
-            // حفظ دور المستخدم المرتبط بالكود
-            let rolesMapping = JSON.parse(localStorage.getItem('partnerRoles')) || { 'A1B2C3D4': 'library' };
-            rolesMapping[generatedCode] = role;
-            localStorage.setItem('partnerRoles', JSON.stringify(rolesMapping));
+                // 2. Use UID prefix as the visible ID (optional, but consistent)
+                const partnerId = uid.substring(0, 8).toUpperCase();
+
+                // 3. Save partner profile to Firestore using UID as primary key for better security/conflicts
+                await db.collection('partners').doc(uid).set({
+                    id: partnerId,
+                    uid: uid,
+                    name: libName,
+                    role: role,
+                    wilaya: wilayaName,
+                    phone: phone,
+                    email: email,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // 4. Add to 'libraries' collection so it shows up on the homepage
+                await db.collection('libraries').doc(uid).set({
+                    id: partnerId,
+                    uid: uid,
+                    name: libName,
+                    wilaya: wilayaName,
+                    image: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=400&auto=format&fit=crop',
+                    rating: 5.0
+                });
+
+                // 5. Show success
+                registerForm.style.display = 'none';
+                successCard.style.display = 'block';
+
+            } catch (error) {
+                console.error("Registration Error:", error);
+                let msg = "حدث خطأ أثناء التسجيل.";
+                if (error.code === 'auth/email-already-in-use') {
+                    msg = "❌ هذا البريد الإلكتروني مستخدم مسبقاً. جرب بريد آخر.";
+                } else if (error.code === 'auth/invalid-email') {
+                    msg = "❌ البريد الإلكتروني غير صحيح.";
+                } else if (error.code === 'auth/weak-password') {
+                    msg = "❌ كلمة السر ضعيفة جداً. استخدم 6 أحرف على الأقل.";
+                }
+                alert(msg);
+                submitBtn.disabled = false;
+                submitBtn.textContent = '> EXECUTE_REGISTRATION()';
+            }
         });
+
 
         function copyIdAndLogin() {
             navigator.clipboard.writeText(generatedCode).then(() => {
-                window.location.href = 'index.html';
+                window.location.href = 'library.html'; // Go directly to dashboard
             }).catch(err => {
                 alert('انسخ المعرف يدوياً: ' + generatedCode);
-                window.location.href = 'index.html';
+                window.location.href = 'library.html';
             });
         }
     </script>
+    <!-- Firebase SDKs (Compat Version) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
     <script src="algeria_cities.js"></script>
 </body>
 
