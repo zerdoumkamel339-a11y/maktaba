@@ -792,21 +792,29 @@
 
         const registerForm = document.getElementById('registerForm');
         const successCard = document.getElementById('successCard');
-        const headerSection = document.getElementById('headerSection');
         const libWilaya = document.getElementById('libWilaya');
-        const displayId = document.getElementById('displayId');
-        let generatedCode = '';
 
-        // Load wilayas
-        window.addEventListener('DOMContentLoaded', () => {
-            let wilayasToLoad = (typeof algeriaWilayas !== 'undefined') ? algeriaWilayas : fallbackWilayas;
-            wilayasToLoad.forEach(w => {
-                const opt = document.createElement('option');
-                opt.value = w.name;
-                opt.textContent = `${w.id} - ${w.name}`;
-                libWilaya.appendChild(opt);
-            });
-        });
+        // Load wilayas (Execute immediately safely)
+        try {
+            let wilayasToLoad = fallbackWilayas;
+            if (typeof algeriaWilayas !== 'undefined') {
+                wilayasToLoad = algeriaWilayas;
+            } else if (window.algeriaWilayas) {
+                wilayasToLoad = window.algeriaWilayas;
+            }
+
+            if (libWilaya) {
+                wilayasToLoad.forEach(w => {
+                    const opt = document.createElement('option');
+                    opt.value = w.name;
+                    opt.textContent = `${w.id} - ${w.name}`;
+                    libWilaya.appendChild(opt);
+                });
+            }
+        } catch (e) {
+            console.error("Error loading wilayas:", e);
+        }
+
 
         function updateRoleDescription() {
             const role = document.getElementById('partnerRole').value;
